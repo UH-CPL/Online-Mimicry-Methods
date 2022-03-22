@@ -1,3 +1,3 @@
-# Online Mimicry
+# Data is not yet public
 
-## Contains RCode for Curation and Analysis of Online Mimicry
+## Please email me at awesley4@uh.edu for data availability.
