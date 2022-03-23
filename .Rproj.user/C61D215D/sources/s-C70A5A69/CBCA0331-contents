@@ -1,0 +1,59 @@
+library(tidyverse)
+
+
+ms = read_csv("Data/CSV/ms_ravdess.csv")
+
+lab = read_csv("Data/CSV/lab_ravdess_30Hz.csv")
+
+lab$Participant_ID = str_pad(lab$Participant_ID, 2, pad = "0")
+lab$Rep = str_pad(lab$Rep, 2, pad = "0")
+lab$Statement = str_pad(lab$Statement, 2, pad = "0")
+
+lab$Intensity[which(lab$Intensity == "N")] = "01"
+lab$Intensity[which(lab$Intensity == "H")] = "02"
+
+lab$GroundTruth[which(lab$GroundTruth == "Neutral")] = "01"
+lab$GroundTruth[which(lab$GroundTruth == "Calm")] = "02"
+lab$GroundTruth[which(lab$GroundTruth == "Happy")] = "03"
+lab$GroundTruth[which(lab$GroundTruth == "Sad")] = "04"
+lab$GroundTruth[which(lab$GroundTruth == "Angry")] = "05"
+lab$GroundTruth[which(lab$GroundTruth == "Afraid")] = "06"
+lab$GroundTruth[which(lab$GroundTruth == "Disgusted")] = "07"
+lab$GroundTruth[which(lab$GroundTruth == "Surprised")] = "08"
+
+lab1 = read_csv("Data/CSV/lab_ravdess_30Hz.csv")
+lab1["Video.ID"] = paste0("01-01-",lab$GroundTruth,"-",lab$Intensity,"-",
+                         lab$Statement,"-",lab$Rep,"-",lab$Participant_ID)
+
+lab1 = select(lab1, c(37, everything()))
+lab1["Algo"] = 0
+
+labnew = as.data.frame(matrix(ncol = ncol(lab1), nrow = 0))
+
+count = 0
+for (i in unique(ms$Video_ID)) {
+  if (i == "x") {
+    next
+  }
+  print(i)
+  msd = filter(ms, Video_ID == i)
+  labd = filter(lab1, Video.ID == i)
+  s = head(msd$Frame[which(msd$Algo == 1)], 1)
+  e = tail(msd$Frame[which(msd$Algo == 1)], 1)
+  labd$Algo[which(labd$Frame %in% c(s:e))] = 1
+  labnew = rbind(labnew, labd)
+}
+
+labnew["Emotion"] = as.numeric(labnew$F_Angry) +
+  as.numeric(labnew$F_Disgusted) +
+  as.numeric(labnew$F_Afraid) +
+  as.numeric(labnew$F_Happy) +
+  as.numeric(labnew$F_Sad) +
+  as.numeric(labnew$F_Surprised)
+
+labnew["Total"] = round(labnew$F_Neutral + labnew$Emotion, digits = 2)
+labnew["FACSBinary3"] = NA
+labnew$FACSBinary3[which(labnew$F_Neutral >= 0.5)] = 0
+labnew$FACSBinary3[which(labnew$F_Neutral < 0.5)] = 1
+
+write_csv(labnew, "Data/CSV/lab_ravdess_30Hz.csv")

@@ -1,0 +1,42 @@
+# Adds physiology of the subject to the State of the ART judges-presenterdataset
+
+ss = Sys.time()
+
+library(tidyverse)
+library(dplyr)
+library(readxl)
+
+dir = dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir)
+
+source("t2s.R")
+source("s2t.R")
+
+asd = Sys.Date()
+dir.create(paste0("subjectFiles_",asd))
+
+d = read.csv("Judges-Presenter.csv")
+p = read.csv("Physiological Data.csv")
+
+d2 = read.csv("colnames.csv")
+
+for (sub in unique(d$Participant_ID)) {
+   p1 = filter(p, Participant_ID == sub)
+   #p1 = p1[rep(seq_len(nrow(p1)), each = 3), ]
+   print(paste0(sub,"-",unique(p1$Participant_ID)))
+   p1 = p1[,c(4:11)]
+   d1 = filter(d, Participant_ID == sub)
+   x = merge(d1, p1, by.x = "newTime", by.y = "Time", all.x = T)
+   x = x[,c(2:69,1,70:76)]
+   write.csv(x, paste0("subjectFiles_",asd,"/",sub,".csv"), row.names = F)
+   d2 = rbind(d2,x)
+   print("--------Bind successful---------")
+}
+
+dim(d2)
+
+write.csv(d2, paste0("Judges-Presenter_",Sys.Date(),".csv"), row.names = F)
+
+ee = Sys.time()
+
+print(ee-ss)
