@@ -11,6 +11,8 @@ setwd(dir)
 dirn = paste0("Plots/XXTimeseries_areaplots_",Sys.Date())
 dir.create(dirn)
 
+sysdate = read.csv("Data/")
+
 d = read.csv(paste0("Data/Judges-Presenter_F+P_newPR_",Sys.Date(),".csv"))
 d6 = read.csv("Data/Judges-Presenter_2020-07-27.csv")
 d7 = read.csv("Data/Judges-Presenter_2022-03-23.csv")

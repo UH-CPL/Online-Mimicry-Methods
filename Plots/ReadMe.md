@@ -1,3 +1,3 @@
-# Online Mimicry
+# This is the folder containing visualization
 
-## Contains RCode for Curation and Analysis of Online Mimicry
+## These will be populated as the code is run.
