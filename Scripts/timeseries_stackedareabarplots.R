@@ -323,3 +323,89 @@ rdraw_area_plot <- function(subj_facs_df, subj, treatment, area_plot_type) {
    
    return(area_plot)
 }
+
+
+
+
+
+
+
+
+# Cumulative Judges 
+jdraw_area_plot <- function(subj_facs_df, subj, treatment, area_plot_type) {
+   area_plot <- subj_facs_df %>% 
+      select(Treatment_Time_New, 
+             J_angry, 
+             J_disgusted, 
+             J_afraid, 
+             J_happy, 
+             J_sad, 
+             J_surprised, 
+             J_neutral) %>% 
+      gather(key = "Expression", value = "Value", -Treatment_Time_New) %>% 
+      mutate(Expression = recode_factor(Expression,
+                                        'J_angry'='Angry',
+                                        'J_disgusted'='Disgusted',
+                                        'J_afraid'='Afraid',
+                                        'J_happy'='Happy',
+                                        'J_sad'='Sad',
+                                        'J_surprised'='Surprised',
+                                        'J_neutral'='Neutral'
+      )) %>% 
+      
+      #ggplot(aes(x=Treatment_Time_New, y=Value, color=Expression, fill=Expression)) +
+      ggplot()
+   #geom_point(aes(x=Treatment_Time_New, y=1.2, colour=G_Direction), shape=15, size=2) +
+   #scale_color_manual(values = c("Right" = "green",  "Left" = "white"))
+   
+   if (area_plot_type=='area') {
+      area_plot <- area_plot +
+         geom_area(aes(x=Treatment_Time_New, y=Value, color=Expression, fill=Expression),
+                   alpha = 0.5)
+   } else if (area_plot_type=='bar') {
+      area_plot <- area_plot +
+         geom_bar(aes(x=Treatment_Time_New, y=Value, color=Expression, fill=Expression),
+                  alpha = 0.5, 
+                  stat = "identity")
+   }
+   
+   
+   area_plot <- area_plot +
+      xlab("Time [s]") +
+      ylab("") +
+      ggtitle("Judges") +
+      
+      scale_color_manual(values = c("Neutral"="Light Grey",
+                                    "Surprised"="Cyan",
+                                    "Sad"="Blue",
+                                    "Happy"="Green",
+                                    "Afraid"="Orange",
+                                    "Disgusted"="Brown",
+                                    "Angry"="Red"
+      )) +
+      
+      scale_fill_manual(values = c("Neutral"="Light Grey",
+                                   "Surprised"="Cyan",
+                                   "Sad"="Blue",
+                                   "Happy"="Green",
+                                   "Afraid"="Orange",
+                                   "Disgusted"="Brown",
+                                   "Angry"="Red"
+      )) +
+      
+      theme_bw() +
+      theme(text=element_text(size=10),
+            axis.text = element_text(size=10),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.line = element_line(colour = "black"),
+            legend.position='left',
+            legend.title = element_blank(),
+            plot.title = element_text(hjust = 0.5,
+                                      size=10,
+                                      margin=margin(t=0, r=0, b=0, l=0)), ##top, right, bottom, left
+            plot.margin = unit(c(0.5, 2, 0.5, 0.5), "lines")) ##top, right, bottom, left
+   # 
+   
+   return(area_plot)
+}

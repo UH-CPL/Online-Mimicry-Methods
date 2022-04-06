@@ -1,5 +1,7 @@
 library(tidyverse)
-library(dplyr)
+
+dir = dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir)
 
 x = read.csv("Data/All_J_F_Raw.csv")
 colnames(x)
@@ -34,4 +36,4 @@ x7["S"] = NA
 x7["ActualFrame"] = x7$MainFrame
 
 x7$S = seq.int(0,538.23333, 1/30)
-write.csv(x7, "Data/All_J_F_30Hz_NO_Duplicates___A.csv", row.names = F)
+write.csv(x7, "Data/All_J_F_30Hz_No_Duplicates.csv", row.names = F)

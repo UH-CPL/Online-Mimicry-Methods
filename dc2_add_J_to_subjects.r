@@ -30,7 +30,7 @@ colnames(d2) = append(colnames(d1),colnames(jd))
 
 asd = Sys.Date()
 
-dir.create(paste0("Data/XXsubjectFiles_",asd))
+dir.create(paste0("Data/presenter+judges_F_",asd))
 
 sink(paste0("Logs/dc_2_",asd,".txt"))
 
@@ -48,7 +48,7 @@ for (sub in f$Subject) {
    m = a+m
    jd1 = filter(jd, MainFrame >= a & MainFrame < m)
    x[(which(x$Seconds == s)[1]:which(x$Seconds == e)[3]),37:69] = jd1
-   write.csv(x, paste0("Data/XXsubjectFiles_",asd,"/",sub,".csv"), row.names = F)
+   write.csv(x, paste0("Data/presenter+judges_F_",asd,"/",sub,".csv"), row.names = F)
    d2 = rbind(d2,x)
    print("--------Bind successful---------")
 }
@@ -56,7 +56,7 @@ for (sub in f$Subject) {
 dim(d2)
 
 
-write.csv(d2, paste0("Data/Judges-Presenter_",asd,"_A.csv"), row.names = F)
+write.csv(d2, paste0("Data/Presenter-Judges_F_30Hz",asd,".csv"), row.names = F)
 print("")
 print("")
 print("")
