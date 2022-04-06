@@ -13,9 +13,9 @@ source("Scripts/t2s.R")
 source("Scripts/s2t.R")
 
 asd = read.csv("Data/TimeDate.csv")$x
-dir.create(paste0("Data/XXsubjectFiles_F+P_",asd))
+dir.create(paste0("Data/presenter+judges_F+P_",asd))
 
-d = read.csv(paste0("Data/Judges-Presenter_",asd,".csv"))
+d = read.csv(paste0("Data/Presenter-Judges_F_30Hz_",asd,".csv"))
 p = read.csv("Data/Physiological Data.csv")
 
 d2 = read.csv("Data/colnames.csv")
@@ -30,20 +30,20 @@ for (sub in unique(d$Participant_ID)) {
    d1 = filter(d, Participant_ID == sub)
    x = merge(d1, p1, by.x = "newTime", by.y = "Time", all.x = T)
    x = x[,c(2:69,1,70:76)]
-   write.csv(x, paste0("Data/XXsubjectFiles_F+P_",asd,"/",sub,".csv"), row.names = F)
+   write.csv(x, paste0("Data/presenter+judges_F+P_",asd,"/",sub,".csv"), row.names = F)
    d2 = rbind(d2,x)
    print("--------Bind successful---------")
 }
 
 dim(d2)
 
-write.csv(d2, paste0("Data/Judges-Presenter_F+P_",Sys.Date(),".csv"), row.names = F)
+write.csv(d2, paste0("Data/Presenter-Judges_F+P_AllTreatment_",Sys.Date(),".csv"), row.names = F)
 
 d3 = filter(d2, Treatment == "PR")
 d4 = filter(d2, newPR == 1)
 
-write.csv(d3, paste0("Data/Judges-Presenter_F+P_PR_",Sys.Date(),".csv"), row.names = F)
-write.csv(d4, paste0("Data/Judges-Presenter_F+P_newPR_",Sys.Date(),".csv"), row.names = F)
+write.csv(d3, paste0("Data/Presenter-Judgs_F+P_oldPR_",Sys.Date(),".csv"), row.names = F)
+write.csv(d4, paste0("Data/Presenter-Judges_F+P_PR_",Sys.Date(),".csv"), row.names = F)
 
 print("")
 print("")
