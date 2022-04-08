@@ -39,12 +39,6 @@ dim(d2)
 
 write.csv(d2, paste0("Data/Presenter-Judges_F+P_AllTreatment_",Sys.Date(),".csv"), row.names = F)
 
-d3 = filter(d2, Treatment == "PR")
-d4 = filter(d2, newPR == 1)
-
-write.csv(d3, paste0("Data/Presenter-Judgs_F+P_oldPR_",Sys.Date(),".csv"), row.names = F)
-write.csv(d4, paste0("Data/Presenter-Judges_F+P_PR_",Sys.Date(),".csv"), row.names = F)
-
 print("")
 print("")
 print("")
