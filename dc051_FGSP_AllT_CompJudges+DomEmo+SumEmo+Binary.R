@@ -13,7 +13,7 @@ setwd(dir)
 source("Scripts/getBinary.R")
 source("Scripts/getDomSumEmo.R")
 
-d = read.csv("Data/Presenter-Judges_FGSP_PR_1HzMean_2022-04-06.csv")
+d = read.csv("Data/Presenter-Judges_FGSP_AllT_1HzMean_2022-04-06.csv")
 
 d2 = read.csv("Data/2021/Judges-Presenter_1Hz.csv")
 
@@ -109,7 +109,7 @@ for (i in 1:nrow(d)) {
   
 }
 
-write.csv(d, "Data/Presenter-Judges_FGSPB_PR_1HzMean_SemiFinal_2022-04-06.csv")
+write.csv(d, "Data/Presenter-Judges_FGSPB_AllT_1HzMean_SemiFinal_2022-04-06.csv")
 
 
 
