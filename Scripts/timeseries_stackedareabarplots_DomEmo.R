@@ -1,8 +1,8 @@
 #Subject
-fdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
+fdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type, header) {
   area_plot <- subj_facs_df %>%
     select(Treatment_Time_New, 
-           F_1) %>% 
+           F_DomEmo) %>% 
     gather(key = "Expression", value = "Value", -Treatment_Time_New)
   area_plot$Expression = area_plot$Value
   area_plot$Value[which(!is.na(area_plot$Expression))] = 1
@@ -23,7 +23,7 @@ fdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
   area_plot <- area_plot +
     xlab("") +
     ylab("") +
-    ggtitle(sub) +
+    ggtitle(header) +
     
     scale_color_manual(values = c("Neutral"="Light Grey",
                                   "Surprised"="Cyan",
@@ -68,7 +68,7 @@ fdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
 ldraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
   area_plot <- subj_facs_df %>%
     select(Treatment_Time_New, 
-           L_1) %>% 
+           L_DomEmo) %>% 
     gather(key = "Expression", value = "Value", -Treatment_Time_New)
   area_plot$Expression = area_plot$Value
   area_plot$Value[which(!is.na(area_plot$Expression))] = 1
@@ -91,22 +91,22 @@ ldraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
     ylab("") +
     ggtitle("Left Judge") +
     
-    scale_color_manual(values = c("neutral"="Light Grey",
-                                  "surprised"="Cyan",
-                                  "sad"="Blue",
-                                  "happy"="Green",
-                                  "afraid"="Orange",
-                                  "disgusted"="Brown",
-                                  "angry"="Red"
+    scale_color_manual(values = c("Neutral"="Light Grey",
+                                  "Surprised"="Cyan",
+                                  "Sad"="Blue",
+                                  "Happy"="Green",
+                                  "Afraid"="Orange",
+                                  "Disgusted"="Brown",
+                                  "Angry"="Red"
     )) +
     
-    scale_fill_manual(values = c("neutral"="Light Grey",
-                                 "surprised"="Cyan",
-                                 "sad"="Blue",
-                                 "happy"="Green",
-                                 "afraid"="Orange",
-                                 "disgusted"="Brown",
-                                 "angry"="Red"
+    scale_fill_manual(values = c("Neutral"="Light Grey",
+                                 "Surprised"="Cyan",
+                                 "Sad"="Blue",
+                                 "Happy"="Green",
+                                 "Afraid"="Orange",
+                                 "Disgusted"="Brown",
+                                 "Angry"="Red"
     )) +
     
     theme_bw() +
@@ -134,7 +134,7 @@ ldraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
 cdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
   area_plot <- subj_facs_df %>%
     select(Treatment_Time_New, 
-           C_1) %>% 
+           C_DomEmo) %>% 
     gather(key = "Expression", value = "Value", -Treatment_Time_New)
   area_plot$Expression = area_plot$Value
   area_plot$Value[which(!is.na(area_plot$Expression))] = 1
@@ -157,22 +157,22 @@ cdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
     ylab("") +
     ggtitle("Center Judge") +
     
-    scale_color_manual(values = c("neutral"="Light Grey",
-                                  "surprised"="Cyan",
-                                  "sad"="Blue",
-                                  "happy"="Green",
-                                  "afraid"="Orange",
-                                  "disgusted"="Brown",
-                                  "angry"="Red"
+    scale_color_manual(values = c("Neutral"="Light Grey",
+                                  "Surprised"="Cyan",
+                                  "Sad"="Blue",
+                                  "Happy"="Green",
+                                  "Afraid"="Orange",
+                                  "Disgusted"="Brown",
+                                  "Angry"="Red"
     )) +
     
-    scale_fill_manual(values = c("neutral"="Light Grey",
-                                 "surprised"="Cyan",
-                                 "sad"="Blue",
-                                 "happy"="Green",
-                                 "afraid"="Orange",
-                                 "disgusted"="Brown",
-                                 "angry"="Red"
+    scale_fill_manual(values = c("Neutral"="Light Grey",
+                                 "Surprised"="Cyan",
+                                 "Sad"="Blue",
+                                 "Happy"="Green",
+                                 "Afraid"="Orange",
+                                 "Disgusted"="Brown",
+                                 "Angry"="Red"
     )) +
     
     theme_bw() +
@@ -202,7 +202,7 @@ cdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
 rdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
   area_plot <- subj_facs_df %>%
     select(Treatment_Time_New, 
-           R_1) %>% 
+           R_DomEmo) %>% 
     gather(key = "Expression", value = "Value", -Treatment_Time_New)
   area_plot$Expression = area_plot$Value
   area_plot$Value[which(!is.na(area_plot$Expression))] = 1
@@ -225,22 +225,22 @@ rdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
     ylab("") +
     ggtitle("Right Judge") +
     
-    scale_color_manual(values = c("neutral"="Light Grey",
-                                  "surprised"="Cyan",
-                                  "sad"="Blue",
-                                  "happy"="Green",
-                                  "afraid"="Orange",
-                                  "disgusted"="Brown",
-                                  "angry"="Red"
+    scale_color_manual(values = c("Neutral"="Light Grey",
+                                  "Surprised"="Cyan",
+                                  "Sad"="Blue",
+                                  "Happy"="Green",
+                                  "Afraid"="Orange",
+                                  "Disgusted"="Brown",
+                                  "Angry"="Red"
     )) +
     
-    scale_fill_manual(values = c("neutral"="Light Grey",
-                                 "surprised"="Cyan",
-                                 "sad"="Blue",
-                                 "happy"="Green",
-                                 "afraid"="Orange",
-                                 "disgusted"="Brown",
-                                 "angry"="Red"
+    scale_fill_manual(values = c("Neutral"="Light Grey",
+                                 "Surprised"="Cyan",
+                                 "Sad"="Blue",
+                                 "Happy"="Green",
+                                 "Afraid"="Orange",
+                                 "Disgusted"="Brown",
+                                 "Angry"="Red"
     )) +
     
     theme_bw() +
@@ -270,7 +270,7 @@ rdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
 jdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
   area_plot <- subj_facs_df %>%
     select(Treatment_Time_New, 
-           J_1) %>% 
+           J_DomEmo) %>% 
     gather(key = "Expression", value = "Value", -Treatment_Time_New)
   area_plot$Expression = area_plot$Value
   area_plot$Value[which(!is.na(area_plot$Expression))] = 1
@@ -293,22 +293,22 @@ jdraw_area_plot_DomEmo <- function(subj_facs_df, subj, area_plot_type) {
     ylab("") +
     ggtitle("Judges") +
     
-    scale_color_manual(values = c("neutral"="Light Grey",
-                                  "surprised"="Cyan",
-                                  "sad"="Blue",
-                                  "happy"="Green",
-                                  "afraid"="Orange",
-                                  "disgusted"="Brown",
-                                  "angry"="Red"
+    scale_color_manual(values = c("Neutral"="Light Grey",
+                                  "Surprised"="Cyan",
+                                  "Sad"="Blue",
+                                  "Happy"="Green",
+                                  "Afraid"="Orange",
+                                  "Disgusted"="Brown",
+                                  "Angry"="Red"
     )) +
     
-    scale_fill_manual(values = c("neutral"="Light Grey",
-                                 "surprised"="Cyan",
-                                 "sad"="Blue",
-                                 "happy"="Green",
-                                 "afraid"="Orange",
-                                 "disgusted"="Brown",
-                                 "angry"="Red"
+    scale_fill_manual(values = c("Neutral"="Light Grey",
+                                 "Surprised"="Cyan",
+                                 "Sad"="Blue",
+                                 "Happy"="Green",
+                                 "Afraid"="Orange",
+                                 "Disgusted"="Brown",
+                                 "Angry"="Red"
     )) +
     
     theme_bw() +
