@@ -1,0 +1,13 @@
+# Libraries Required and Loading
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(plotly)
+
+# Retrieving current directory
+dir = dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir)
+
+# Read 1 Hz Data File
+dy = read.csv("Data/Presenter-Judges_FGSPB_AllT_1HzMean_SemiFinal_2022-04-06_withCompositeJBinary.csv")
