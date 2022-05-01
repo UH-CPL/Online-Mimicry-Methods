@@ -57,6 +57,6 @@ for (sub in unique(d$Participant_ID)) {
 
 sink()
 
-d10 = d9[,c(41:44,1:7,45:54,:)]
+d10 = d9[,c(41:44,1:7,45:54,8:35,55:64,93:132,36:40,65:92)]
 
-write.csv(d9, "Data/Presenter-Judges_Summary_AllT_1HzMean_Clean.csv", row.names = F)
+write.csv(d10, "Data/Presenter-Judges_Summary_AllT_1HzMean_Clean.csv", row.names = F)
