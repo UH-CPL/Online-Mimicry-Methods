@@ -13,11 +13,11 @@ setwd(dir)
 d = read.csv("Data/Presenter-Judges_FGSP_AllTreatment_2022-04-06.csv")
 d7 = data.frame()
 
-asd = read.csv("Data/TimeDate.csv")$x
-dir.create(paste0("Data/Presenter-Judges_FGS+P_AllT_1HzMean_",asd))
+asd = Sys.Date()
+dir.create(paste0("Data/Presenter-Judges_FGS+P_AllT_1HzJP_",asd))
 
 
-#sink(paste0("Logs/dc_4_Mean_",asd,".txt"))
+sink(paste0("Logs/dc_4_JP_",asd,".txt"))
 
 
 for (sub in unique(d$Participant_ID)) {
@@ -26,11 +26,11 @@ for (sub in unique(d$Participant_ID)) {
   d1 = d1[-c(1:3),]
   d4 = filter(d1, Treatment == "RB")
   d2 = arrange(d1, Seconds)
-  d2[c("BL_PP","BL_PP2","RBL")] = NA
+  d2[c("BL_PP","BL_PP2")] = NA
   bpp = as_tibble(d2)
   bpp$Seconds = as.integer(bpp$Seconds)
   #bppn = bpp[,-(c(1, 19, 33, 34, 38, 48, 58, 69, 71))]
-  bppc = bpp[,(c(1, 19, 33, 34, 38, 48, 58, 69, 71))]
+  bppc = bpp[,(c(1, 4:10, 40:46, 50:56, 60:66, 19, 33, 34, 38, 48, 58, 69, 71))]
   d3 = aggregate(bpp, by = list(bpp$Seconds), FUN = mean, na.rm = T)
   
   for (i in unique(d3$Seconds)) {
@@ -38,7 +38,8 @@ for (sub in unique(d$Participant_ID)) {
       print(i)
     }
     d3$Participant_ID[i] = unique(bpp$Participant_ID[(which(bpp$Seconds == i))])
-    d3$G_Direction[i] = unique(bpp$G_Direction[(which(bpp$Seconds == i))])
+    d3$F_Angry[i] = 
+    d3$G_Direction[i] = unique(bpp$G_Direction[(which(bpp$Seconds == i))])[1]
     d3$Treatment[i] = unique(bpp$Treatment[(which(bpp$Seconds == i))])
     d3$Group[i] = unique(bpp$Group[(which(bpp$Seconds == i))])[1]
     d3$L_Time[i] = unique(bpp$L_Time[(which(bpp$Seconds == i))])[1]
@@ -48,23 +49,17 @@ for (sub in unique(d$Participant_ID)) {
     d3$Task[i] = unique(bpp$Task[(which(bpp$Seconds == i))])
   }
   
+  d3$BL_PP = mean(d4$PP_QC, na.rm = T)
+  
+  d5 = filter(d3, Treatment == "RB")
   d6 = as_tibble(d5$PP_QC)
   d6["T"] = seq(1:nrow(d6))
   d6$value[is.na(d6$value)] = mean(d6$value, na.rm = T)
   x1 = rollmean(d6$value, k = 151)
   d3$BL_PP2 = min(x1)
-  wmin = which(x1 == min(x1))
-  d3$RBL[(wmin):(wmin+150)] = 1
-  d5 = filter(d3, Treatment == "RB")
-  
-  d3$BL_PP = mean(d4$PP_QC, na.rm = T)
-  d3$BL_EDA = mean(d4$EDA_QC, na.rm = T)
-  d3$BL_BR = mean(d4$BR_QC, na.rm = T)
-  d3$BL_Chest_HR = mean(d4$Chest_HR_QC, na.rm = T)
-  d3$BL_Wrist_HR = mean(d4$Wrist_HR_QC, na.rm = T)
   
   #p1 = p1[rep(seq_len(nrow(p1)), each = 3), ]
-  write.csv(d3, paste0("Data/Presenter-Judges_FGS+P_AllT_1HzMean_",asd,"/",sub,".csv"), row.names = F)
+  write.csv(d3, paste0("Data/Presenter-Judges_FGS+P_AllT_1HzJP_",asd,"/",sub,".csv"), row.names = F)
   d7 = rbind(d7,d3)
   print("--------Bind successful---------")
   print("")
@@ -72,10 +67,10 @@ for (sub in unique(d$Participant_ID)) {
   print("")
 }
 
-write.csv(d7, paste0("Data/Presenter-Judges_FGSP_AllT_1HzMean_",asd,".csv"))
+write.csv(d7, paste0("Data/Presenter-Judges_FGSP_AllT_1HzJP_",asd,".csv"))
 
 d8 = filter(d7, newPR == 1)
-write.csv(d8, paste0("Data/Presenter-Judges_FGSP_PR_1HzMean_",asd,".csv"))
+write.csv(d8, paste0("Data/Presenter-Judges_FGSP_PR_1HzJP_",asd,".csv"))
 
 ee = Sys.time()
 

@@ -10,7 +10,7 @@ dir = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(dir)
 
 # Read 1 Hz Data File
-dy = read.csv("Data/Presenter-Judges_FGSPB_AllT_1HzMean_SemiFinal_2022-04-06_withCompositeJBinary.csv")
+d = read.csv("Data/Presenter-Judges_FGSPB_AllT_1HzMean_SemiFinal_2022-04-06_withCompositeJBinary.csv")
 
 
 
@@ -137,11 +137,12 @@ d$Treatment[which(is.na(d$Treatment))] = "NA"
 
 # sub = "T005"
 # tr = "PR"
-# d1 = filter(d, Participant_ID == sub)
-# d2 = filter(d1, Treatment == tr)
-# write.csv(d2, "testd2.csv", row.names = F)
+# d5 = filter(d4, Participant_ID == "T005")
+# d6 = filter(d5, Treatment == "PR")
+# write.csv(d5, "testd2_v2.csv", row.names = F)
+# write.csv(d6, "testd2PR_v2.csv", row.names = F)
 
-sink("Logs/Lock.txt")
+sink("Logs/Lock1_v2.txt")
 
 #unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]
 
@@ -171,30 +172,34 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
     print(tr)
     print("--------------------------")
     d2 = filter(d1, Treatment == tr)
-    if (tr %in% c("RB","ST","DT","PM", "NA")) {
-      d2$F_DomEmoB_N_count = as.numeric(table(d2$F_DomEmoBinary)[1])
-      d2$F_DomEmoB_N_percentage = as.numeric((proportions(table(d2$F_DomEmoBinary))*100)[1])
-      d2$F_DomEmoB_E_count = as.numeric(table(d2$F_DomEmoBinary)[2])
-      d2$F_DomEmoB_N_percentage = as.numeric((proportions(table(d2$F_DomEmoBinary))*100)[2])
 
-      d2$F_SumEmoB_N_count = as.numeric(table(d2$F_SumEmoBinary)[1])
-      d2$F_SumEmoB_N_percentage = as.numeric((proportions(table(d2$F_SumEmoBinary))*100)[1])
-      d2$F_SumEmoB_E_count = as.numeric(table(d2$F_SumEmoBinary)[2])
-      d2$F_SumEmoB_N_percentage = as.numeric((proportions(table(d2$F_SumEmoBinary))*100)[2])
+    d2$F_DomEmoB_N_count = as.numeric(table(d2$F_DomEmoBinary)[1])
+    d2$F_DomEmoB_N_percentage = as.numeric((proportions(table(d2$F_DomEmoBinary))*100)[1])
+    d2$F_DomEmoB_E_count = as.numeric(table(d2$F_DomEmoBinary)[2])
+    d2$F_DomEmoB_E_percentage = as.numeric((proportions(table(d2$F_DomEmoBinary))*100)[2])
+
+    d2$F_SumEmoB_N_count = as.numeric(table(d2$F_SumEmoBinary)[1])
+    d2$F_SumEmoB_N_percentage = as.numeric((proportions(table(d2$F_SumEmoBinary))*100)[1])
+    d2$F_SumEmoB_E_count = as.numeric(table(d2$F_SumEmoBinary)[2])
+    d2$F_SumEmoB_E_percentage = as.numeric((proportions(table(d2$F_SumEmoBinary))*100)[2])
       
-      d2$F_observation_count = sum(table(d2$F_DomEmoBinary))
-      d2$F_observation_percentage = (sum(table(d2$F_DomEmoBinary))/nrow(d2))*100
-    }
+    d2$F_observation_count = sum(table(d2$F_DomEmoBinary))
+    d2$F_observation_percentage = (sum(table(d2$F_DomEmoBinary))/nrow(d2))*100
+      
     if (tr == "PR") {
+      
+      d2$Treatment_Time = seq(0, nrow(d2)-1)
+      d1$LengthPR = nrow(d2)
+      
       d2$J_DomEmoB_N_count = as.numeric(table(d2$J_DomEmoBinary)[1])
       d2$J_DomEmoB_N_percentage = as.numeric((proportions(table(d2$J_DomEmoBinary))*100)[1])
       d2$J_DomEmoB_E_count = as.numeric(table(d2$J_DomEmoBinary)[2])
-      d2$J_DomEmoB_N_percentage = as.numeric((proportions(table(d2$J_DomEmoBinary))*100)[2])
+      d2$J_DomEmoB_E_percentage = as.numeric((proportions(table(d2$J_DomEmoBinary))*100)[2])
       
       d2$J_SumEmoB_N_count = as.numeric(table(d2$J_SumEmoBinary)[1])
       d2$J_SumEmoB_N_percentage = as.numeric((proportions(table(d2$J_SumEmoBinary))*100)[1])
       d2$J_SumEmoB_E_count = as.numeric(table(d2$J_SumEmoBinary)[2])
-      d2$J_SumEmoB_N_percentage = as.numeric((proportions(table(d2$J_SumEmoBinary))*100)[2])
+      d2$J_SumEmoB_E_percentage = as.numeric((proportions(table(d2$J_SumEmoBinary))*100)[2])
       
       d2$J_observation_count = sum(table(d2$J_DomEmoBinary))
       d2$J_observation_percentage = (sum(table(d2$J_DomEmoBinary))/nrow(d2))*100
@@ -216,11 +221,11 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
 # PJ DEM NoLock
         if (!is.na(d2$F_DomEmoBinary[i]) && !is.na(d2$J_DomEmoBinary[i])){
           if (d2$F_DomEmoBinary[i] == 0 && d2$J_DomEmoBinary[i] == 1) {
-            d2$PJ_DEM_NE[i] = 0
+            d2$PJ_DEM_NE[i] = 1
             d2$PJ_DEM_Lock[i] = 0
           }
           if (d2$F_DomEmoBinary[i] == 1 && d2$J_DomEmoBinary[i] == 0) {
-            d2$PJ_DEM_EN[i] = 0
+            d2$PJ_DEM_EN[i] = 1
             d2$PJ_DEM_Lock[i] =0
           }
         }
@@ -241,11 +246,11 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
 # PJ SEM NoLock
         if (!is.na(d2$F_SumEmoBinary[i]) && !is.na(d2$J_SumEmoBinary[i])){
           if (d2$F_SumEmoBinary[i] == 0 && d2$J_SumEmoBinary[i] == 1) {
-            d2$PJ_SEM_NE[i] = 0
+            d2$PJ_SEM_NE[i] = 1
             d2$PJ_SEM_Lock[i] = 0
           }
           if (d2$F_SumEmoBinary[i] == 1 && d2$J_SumEmoBinary[i] == 0) {
-            d2$PJ_SEM_EN[i] = 0
+            d2$PJ_SEM_EN[i] = 1
             d2$PJ_SEM_Lock[i] = 0
           }
         }
@@ -268,11 +273,11 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
         if (!is.na(d2$F_DomEmoBinary[i]) && !is.na(d2$CJ_Binary[i])){
           if (d2$F_DomEmoBinary[i] == 0 && d2$CJ_Binary[i] == 1) {
             d2$PCJ_DEM_NE[i] = 1
-            d2$PCJ_DEM_Lock[i] = 1
+            d2$PCJ_DEM_Lock[i] = 0
           }
           if (d2$F_DomEmoBinary[i] == 1 && d2$CJ_Binary[i] == 0) {
             d2$PCJ_DEM_EN[i] = 1
-            d2$PCJ_DEM_Lock[i] = 1
+            d2$PCJ_DEM_Lock[i] = 0
           }
         }
 
@@ -293,11 +298,11 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
 # PCJ SEM NoLock
         if (!is.na(d2$F_SumEmoBinary[i]) && !is.na(d2$CJ_Binary[i])){
           if (d2$F_SumEmoBinary[i] == 0 && d2$CJ_Binary[i] == 1) {
-            d2$PCJ_SEM_NE[i] = 0
+            d2$PCJ_SEM_NE[i] = 1
             d2$PCJ_SEM_Lock[i] = 0
           }
           if (d2$F_SumEmoBinary[i] == 1 && d2$CJ_Binary[i] == 0) {
-            d2$PCJ_SEM_EN[i] = 0
+            d2$PCJ_SEM_EN[i] = 1
             d2$PCJ_SEM_Lock[i] = 0
           }
         }
@@ -314,7 +319,7 @@ for (sub in unique(d$Participant_ID)[!is.na(unique(d$Participant_ID))]) {
   cat("\n")
 }
 
-write.csv(d3, "Data/Presenter-Judges_FGSPB+CJ+LS_AllT_1HzMean.csv", row.names = F)
+write.csv(d3, "Data/Presenter-Judges_FGSPB+CJ+LS_AllT_1HzMean_v2.csv", row.names = F)
 
 sink()
 
@@ -329,7 +334,7 @@ d$Treatment[which(is.na(d$Treatment))] = "NA"
 
 d4 = data.frame()
 
-sink("Logs/Lock2.txt")
+sink("Logs/Lock2_v2.txt")
 
   
 for (sub in unique(d$Participant_ID)) {
@@ -451,7 +456,7 @@ for (sub in unique(d$Participant_ID)) {
 
 sink()
 
-#write.csv(d4, "Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean.csv", row.names = F)
+write.csv(d4, "Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_v2.csv", row.names = F)
 
 
 

@@ -10,16 +10,16 @@ dir = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(dir)
 
 # Read 1 Hz Data File
-d = read.csv("Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean.csv")
+d = read.csv("Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean_v2.csv")
 d$Treatment[which(is.na(d$Treatment))] = "NA"
 
-subs = 
+#subs = 
 
 d1 = d[,-c(2,5,6,15:18,36:39,47:50,58:61,69:72,83,117,120,123,126,129,132,135,138,141,144,147,150,153,156,159,162,165,168,171,174)]
 
 d9 = data.frame()
 
-sink("Logs/Summary.txt")
+sink("Logs/Summary_v2.txt")
 
 for (sub in unique(d$Participant_ID)) {
   print("================")
@@ -59,4 +59,4 @@ sink()
 
 d10 = d9[,c(41:44,1:7,45:54,8:35,55:64,93:132,36:40,65:92)]
 
-write.csv(d10, "Data/Presenter-Judges_Summary_AllT_1HzMean_Clean.csv", row.names = F)
+write.csv(d10, "Data/Presenter-Judges_Summary_AllT_1HzMean_Clean_v2.csv", row.names = F)

@@ -10,7 +10,7 @@ dir = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(dir)
 
 # Read 1 Hz Data File
-d = read.csv("Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean.csv")
+d = read.csv("Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_v2.csv")
 
 d1 = d[,-c(1,2,3,5,14:35,38:42,50:52,60:62,70:72,109:113,118,120)]
 
@@ -21,4 +21,4 @@ for (i in 8:28) {
   colnames(d2)[i] = paste0("P_",s)
 }
 
-write.csv(d2, "Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean.csv", row.names = F)
+write.csv(d2, "Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean_v2.csv", row.names = F)

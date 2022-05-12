@@ -13,11 +13,11 @@ setwd(dir)
 d = read.csv("Data/Presenter-Judges_FGSP_AllTreatment_2022-04-06.csv")
 d7 = data.frame()
 
-asd = read.csv("Data/TimeDate.csv")$x
+asd = Sys.Date()
 dir.create(paste0("Data/Presenter-Judges_FGS+P_AllT_1HzMean_",asd))
 
 
-#sink(paste0("Logs/dc_4_Mean_",asd,".txt"))
+sink(paste0("Logs/dc_4_Mean_",asd,".txt"))
 
 
 for (sub in unique(d$Participant_ID)) {
@@ -26,7 +26,7 @@ for (sub in unique(d$Participant_ID)) {
   d1 = d1[-c(1:3),]
   d4 = filter(d1, Treatment == "RB")
   d2 = arrange(d1, Seconds)
-  d2[c("BL_PP","BL_PP2","RBL")] = NA
+  d2[c("BL_PP","RBL")] = NA
   bpp = as_tibble(d2)
   bpp$Seconds = as.integer(bpp$Seconds)
   #bppn = bpp[,-(c(1, 19, 33, 34, 38, 48, 58, 69, 71))]
@@ -48,20 +48,24 @@ for (sub in unique(d$Participant_ID)) {
     d3$Task[i] = unique(bpp$Task[(which(bpp$Seconds == i))])
   }
   
+  
+  d5 = filter(d3, Treatment == "RB")
   d6 = as_tibble(d5$PP_QC)
   d6["T"] = seq(1:nrow(d6))
   d6$value[is.na(d6$value)] = mean(d6$value, na.rm = T)
   x1 = rollmean(d6$value, k = 151)
-  d3$BL_PP2 = min(x1)
+  #d3$BL_PP2 = min(x1)
   wmin = which(x1 == min(x1))
-  d3$RBL[(wmin):(wmin+150)] = 1
-  d5 = filter(d3, Treatment == "RB")
+  d3$Treatment_Time = ceiling(d3$Treatment_Time)
+  rbls = which(d3$Treatment_Time == as.numeric(wmin) & d3$Treatment == "RB")
+  d3$RBL[(rbls):(rbls+150)] = 1
   
   d3$BL_PP = mean(d4$PP_QC, na.rm = T)
-  d3$BL_EDA = mean(d4$EDA_QC, na.rm = T)
-  d3$BL_BR = mean(d4$BR_QC, na.rm = T)
-  d3$BL_Chest_HR = mean(d4$Chest_HR_QC, na.rm = T)
-  d3$BL_Wrist_HR = mean(d4$Wrist_HR_QC, na.rm = T)
+  
+  # d3$BL_EDA = mean(d4$EDA_QC, na.rm = T)
+  # d3$BL_BR = mean(d4$BR_QC, na.rm = T)
+  # d3$BL_Chest_HR = mean(d4$Chest_HR_QC, na.rm = T)
+  # d3$BL_Wrist_HR = mean(d4$Wrist_HR_QC, na.rm = T)
   
   #p1 = p1[rep(seq_len(nrow(p1)), each = 3), ]
   write.csv(d3, paste0("Data/Presenter-Judges_FGS+P_AllT_1HzMean_",asd,"/",sub,".csv"), row.names = F)
