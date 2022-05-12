@@ -81,6 +81,8 @@ write.csv(d7, paste0("Data/Presenter-Judges_FGSP_AllT_1HzMean_",asd,".csv"))
 d8 = filter(d7, newPR == 1)
 write.csv(d8, paste0("Data/Presenter-Judges_FGSP_PR_1HzMean_",asd,".csv"))
 
+write.csv(asd,"Data/TimeDate_v2.csv", row.names = F)
+
 ee = Sys.time()
 
 
