@@ -1,3 +1,5 @@
+ss = Sys.time()
+
 # Libraries Required and Loading
 library(dplyr)
 library(tidyverse)
@@ -16,7 +18,7 @@ f = as.data.frame(read.csv("Data/Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean
 df1 = data.frame()
 df2 = data.frame()
 
-
+sink("Logs/AddGaze_to_AllT_AllStats_Clean_v2.txt")
 
 for (sub in unique(f$Participant_ID)) {
   f1 = filter(f, Participant_ID == sub)
@@ -35,17 +37,27 @@ for (sub in unique(f$Participant_ID)) {
     if (unique(f2$Seconds) == unique(d2$Seconds_1Hz)) {
       cat("      - Test Passed\n")
     }
-    f3 = f2[rep(1, nrow(d2)),]
-    d3 = d2[,c(18:27,77)]
-    df = cbind(d3, f3)
-    df = df[,c(12:18,1:11,19:187)]
-    df1 = rbind(df1, df)
+    # f3 = f2[rep(1, nrow(d2)),]
+    # d3 = d2[,c(18:27,77)]
+    # df = cbind(d3, f3)
+    # df = df[,c(12:18,1:11,19:187)]
+    # df1 = rbind(df1, df)
   }
-  df2 = rbind(df2, df1)
+  #df2 = rbind(df2, df1)
   cat("-------------\n")
   cat(paste0(sub," Successfully Bonded to the DF!"))
   cat("=============\n")
   cat("\n\n\n\n")
 }
+
+cat(paste0("\n\n  Writing Big Data \n\n"))
+#write.csv(df2, "Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean_v3.csv", row.names = F)
+cat(paste0("\n\n  File Write Successfull!! \n\n"))
+ee= Sys.time()
+cat("\nnnn")
+ee-ss
+sink()
+
+
 
 
