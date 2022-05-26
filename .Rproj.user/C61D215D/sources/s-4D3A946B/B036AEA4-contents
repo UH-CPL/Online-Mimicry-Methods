@@ -31,21 +31,22 @@ for (sub in unique(f$Participant_ID)) {
   d1 = d1[order(d1$Seconds),]
   d1["Seconds_1Hz"] = as.integer(d1$Seconds)
   iloop = unique(f1$Seconds)
-  iloop[order(iloop)]
-  for (i in unique(order(f1$Seconds))) {
+  iloop = iloop[order(iloop)]
+  for (i in iloop) {
+    print(i)
     cat(i)
     f2 = filter(f1, Seconds == i)
     d2 = filter(d1, Seconds_1Hz == i)
     if (unique(f2$Seconds) == unique(d2$Seconds_1Hz)) {
       cat("      - Test Passed\n")
     }
-    # f3 = f2[rep(1, nrow(d2)),]
-    # d3 = d2[,c(18:27,77)]
-    # df = cbind(d3, f3)
-    # df = df[,c(12:18,1:11,19:187)]
-    # df1 = rbind(df1, df)
+    f3 = f2[rep(1, nrow(d2)),]
+    d3 = d2[,c(18:27,77)]
+    df = cbind(d3, f3)
+    df = df[,c(12:18,1:11,19:187)]
+    df1 = rbind(df1, df)
   }
-  #df2 = rbind(df2, df1)
+  df2 = rbind(df2, df1)
   cat("-------------\n")
   cat(paste0(sub," Successfully Bonded to the DF!"))
   cat("=============\n")
@@ -53,10 +54,10 @@ for (sub in unique(f$Participant_ID)) {
 }
 
 cat(paste0("\n\n  Writing Big Data \n\n"))
-#write.csv(df2, "Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean_v3.csv", row.names = F)
+write.csv(df2, "Presenter-Judges_FGSPB+CJ+ALLStats_AllT_1HzMean_Clean_v3.csv", row.names = F)
 cat(paste0("\n\n  File Write Successfull!! \n\n"))
 ee= Sys.time()
-cat("\nnnn")
+cat("\n\n\n")
 ee-ss
 sink()
 
