@@ -30,7 +30,9 @@ for (sub in unique(f$Participant_ID)) {
   }
   d1 = d1[order(d1$Seconds),]
   d1["Seconds_1Hz"] = as.integer(d1$Seconds)
-  for (i in unique(f1$Seconds)) {
+  iloop = unique(f1$Seconds)
+  iloop[order(iloop)]
+  for (i in unique(order(f1$Seconds))) {
     cat(i)
     f2 = filter(f1, Seconds == i)
     d2 = filter(d1, Seconds_1Hz == i)

@@ -3,7 +3,7 @@
     "path": "C:/Users/cpladmin/Desktop/Online-Mimicry-Methods/dc99_AddGaze_to_AllStats_AllT_1HzMean_Clean_v2.R",
     "project_path": "dc99_AddGaze_to_AllStats_AllT_1HzMean_Clean_v2.R",
     "type": "r_source",
-    "hash": "2652737849",
+    "hash": "2331368345",
     "contents": "",
     "dirty": false,
     "created": 1653531748156.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "37,34",
+        "cursorPosition": "33,21",
         "scrollLine": "15"
     },
     "folds": "",
-    "lastKnownWriteTime": 1653541462,
+    "lastKnownWriteTime": 1653543694,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1653541462508,
+    "last_content_update": 1653543694938,
     "read_only": false,
     "read_only_alternatives": []
 }
