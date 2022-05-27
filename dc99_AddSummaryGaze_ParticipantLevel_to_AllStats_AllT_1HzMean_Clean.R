@@ -14,10 +14,11 @@ setwd(dir)
 # Read 1 Hz Data File
 d = as.data.frame(read.csv("Data/Presenter-Judges_FGSP_AllT_2022-04-06.csv"))
 d$G_Direction[which(d$G_Direction == "")] = NA
+d$Treatment[which(is.na(d$Treatment))] = "NA"
 
 numrow = length(unique(d$Participant_ID))*length(unique(d$Treatment))
 df = as.data.frame(matrix(nrow = numrow, ncol = 11))
-colnames(df) = c("Participant_ID","Group","Treatment","NAData","ValidData","CheckPercentage1","Closed","Left","Right","Check2","CenterPercentage2")
+colnames(df) = c("Participant_ID","Group","Treatment","NAData","ValidData","CheckPercentage1","Closed","Left","Right","Center","CheckPercentage2")
 
 sink("Logs/AddSummaryGaze_to_AllT_AllStats_Clean_v2.txt")
 
@@ -41,10 +42,10 @@ for (sub in unique(d$Participant_ID)) {
     nona = sum(table(d2$G_Direction))/nrow(d2)*100
     df$NAData[i] = na
     df$ValidData[i] = nona
-    df$CenterPercentage1[i] = na + nona
+    df$CheckPercentage1[i] = na + nona
     
     x = prop.table(table(d2$G_Direction))*100
-    df$CenterPercentage2[i] = sum(x)
+    df$CheckPercentage2[i] = sum(x)
     x = data.frame(t(data.frame(x)))
     colnames(x) = x[1,]
     x = x[-1,]
@@ -67,7 +68,6 @@ for (sub in unique(d$Participant_ID)) {
     }
     
   }
-  
   cat("\n==========\n")
 }
 

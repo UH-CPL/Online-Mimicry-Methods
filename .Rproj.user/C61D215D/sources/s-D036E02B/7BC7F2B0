@@ -3,7 +3,7 @@
     "path": "C:/Users/cpladmin/Desktop/Online-Mimicry-Methods/dc99_AddSummaryGaze_ParticipantLevel_to_AllStats_AllT_1HzMean_Clean.R",
     "project_path": "dc99_AddSummaryGaze_ParticipantLevel_to_AllStats_AllT_1HzMean_Clean.R",
     "type": "r_source",
-    "hash": "2956301824",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1653648535347.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "89,0",
-        "scrollLine": "48"
+        "cursorPosition": "47,12",
+        "scrollLine": "26"
     },
     "folds": "",
-    "lastKnownWriteTime": 1653648582,
+    "lastKnownWriteTime": 1653650559,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1653648582183,
+    "last_content_update": 1653650559019,
     "read_only": false,
     "read_only_alternatives": []
 }
