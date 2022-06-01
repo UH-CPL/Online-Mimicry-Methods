@@ -20,7 +20,7 @@ for (sub in unique(d$Participant_ID)) {
   cat(paste0("\n",sub))
   d1 = filter(d, Participant_ID == sub)
   #cat("\n====  Writing Data ====")
-  write.csv(df,paste0("Data/Presenter-Judges_FSPB+CJ+Gaze+ALLStats_AllT_1HzMean_Clean/",sub,".csv"), row.names = F)
+  write.csv(d1,paste0("Data/Presenter-Judges_FSPB+CJ+Gaze+ALLStats_AllT_1HzMean_Clean/",sub,".csv"), row.names = F)
   cat("\nWrite File Successful\n\n\n")
 }
 
