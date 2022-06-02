@@ -18,6 +18,7 @@ library(viridis)
 library(Scale)
 library(ggnewscale)
 library(patchwork)
+library(gridExtra)
 
 
 #Reading the Data
@@ -55,9 +56,25 @@ for (grp in unique(d$Group)) {
     dev.off()
     assign(paste0("g",i), g)
   }
-  if (grp %in% c("CH","CL")) {
-    t = ggarrange()
-  }
+  
+  # if (grp %in% c("CH","CL")) {
+  #   t1 = ggarrange(g1, g2, g3, g4, g5, g6, g7, g8,  common.legend = T, nrow = 2, ncol = 4, legend = "bottom")
+  #   t2 = ggarrange(g8, g9, g10, g11, g12, g13, g14, common.legend = T, nrow = 3, ncol = 5, legend = "bottom")
+  # }
+  # 
+  # if (grp %in% c("BH","BL")) {
+  #   t = ggarrange(g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, common.legend = T, nrow = 3, ncol = 5, legend = "bottom")
+  # }
   
 }
+
+
+# pdf(paste0("Plots/test_", sub,"Gaze.pdf"), width = 36, height = 12)
+# plot()
+# dev.off()
+# 
+# x = grid.arrange(g1, g2, g3, g4, g5, g6, ncol = 2)
+
+
+
 
