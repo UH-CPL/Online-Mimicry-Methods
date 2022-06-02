@@ -32,9 +32,7 @@ for (grp in unique(d$Group)) {
   d1g = melt(d1g)
   
   bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
-  
-  ggplot(x2, aes(x = Cat, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab(sub) + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(tr) 
-  + labs(fill = "Validity")
+
   
   bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
   

@@ -22,64 +22,42 @@ library(patchwork)
 
 #Reading the Data
 d = read.csv("Data/GazeSummary_TreatmentLevel.csv")
-
-for (sub in unique(d$Participant_ID)) {
-  print(sub)
-  d1 = filter(d, Participant_ID == sub)
-  for (tr in unique(d$Treatment)) {
-    print(tr)
-    d2 = filter(d1, Treatment == tr)
-    
-    dna = d1[,c(1,3,4)]
-    # dg = d1[,-c(2,3,4,5,10)]
-    # d1na = melt(d1na)
-    # d1g = melt(d1g)
-    # 
-    # bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
-    # 
-    # bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
-    # 
-    # b = ggarrange(bn, bg, nrow = 2)
-    # assign(paste0("b",grp),b)
-    # pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
-    # plot(b)
-    # dev.off()
-    
-  }
-}
-
+d$Treatment[is.na(d$Treatment)] = "NA"
 
 for (grp in unique(d$Group)) {
   print(grp)
   d1 = filter(d, Group == grp)
-  d1na = d1[,c(1,3,4)]
-  d1g = d1[,-c(2,3,4,5,10)]
-  d1na = melt(d1na)
-  d1g = melt(d1g)
-  
-  bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
-  
-  bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
-  
-  if (grp %in% c("BL","BH")) {
-    bn = bn + xlab("")
-    bg = bg + xlab("")
+  i = 0
+  for (sub in unique(d1$Participant_ID)) {
+    i = i+1
+    print(sub)
+    d2 = filter(d1, Participant_ID == sub)
+    d2 = d2[,-c(2,6,11)]
+    d3 = melt(d2)
+    d3["Category"] = NA
+    d3$Category[which(d3$variable %in% c("NAData","ValidData"))] = "Validity"
+    d3$Category[which(d3$variable %in% c("Closed","Left","Center","Right"))] = "Eye Position"
+    for (tr in unique(d3$Treatment)) {
+      print(tr)
+      d4 = filter(d3, Treatment == tr)
+      d5 = d4
+      d5$Category = factor(d5$Category, levels = c("Validity","Eye Position"))
+      
+      b = ggplot(d5, aes(x = Category, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab(sub) + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(tr) + labs(fill = "")
+      if (tr != "NA") {
+        b = b + ylab("")
+      }
+      assign(paste0("stg",tr), b)
+    }
+    g = plot(ggarrange(stgNA, stgRB, stgPM, stgST, stgDT, stgPR, nrow = 1, common.legend = T, legend = "bottom"))
+    pdf(paste0("Plots/Gaze_Subject_TreatmentWise_Portrait/", sub,"Gaze.pdf"), width = 18, height = 6)
+    plot(g)
+    dev.off()
+    assign(paste0("g",i), g)
   }
-  if (grp %in% c("CH","BH")) {
-    bn = bn + ylab("")
-    bg = bg + ylab("")
+  if (grp %in% c("CH","CL")) {
+    t = ggarrange()
   }
   
-  
-  b = ggarrange(bn, bg, nrow = 2)
-  assign(paste0("b",grp),b)
 }
 
-
-g = ggarrange(bBL , bBH, bCL, bCH, nrow = 2, ncol = 2, common.legend = TRUE, legend = "bottom")
-
-pdf("Plots/Gaze_Summary/Groupwise_Gaze.pdf", width = 14, height = 9.5)
-plot(g)
-dev.off()
-
-g1 = bBL + bBH + bCL + bCH & theme(legend.position = "bottom")
