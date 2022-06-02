@@ -26,46 +26,36 @@ d = read.csv("Data/GazeSummary_ParticipantLevel.csv")
 for (grp in unique(d$Group)) {
   print(grp)
   d1 = filter(d, Group == grp)
-  d1na = d1[,c(1,3,4)]
-  d1g = d1[,-c(2,3,4,5,10)]
-  d1na = melt(d1na)
-  d1g = melt(d1g)
+  d1 = d1[-c(1,5,10)]
+  d2 = melt(d1)
+  d2["Category"] = NA
+  d2$Category[which(d2$variable %in% c("NAData","ValidData"))] = "Validity"
+  d2$Category[which(d2$variable %in% c("Closed","Left","Center","Right"))] = "Eye Position"
+  d2$Category = factor(d2$Category, levels = c("Validity","Eye Position"))
   
-  bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
+  b = ggplot(d2, aes(x = Category, y = value, fill = variable))+geom_bar(stat = "identity", position = "fill") + xlab("") + ylab("") + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(grp) + labs(fill = "") + theme_bw()
   
-  
-  bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
-  
-  b = ggarrange(bn, bg, nrow = 2)
   assign(paste0("b",grp),b)
-  # pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
-  # plot(b)
-  # dev.off()
+  pdf(paste0("Plots/Gaze_GroupWise/",grp,"_GazeCumulative.pdf"))
+  plot(b)
+  dev.off()
 }
 
 for (grp in unique(d$Group)) {
   print(grp)
   d1 = filter(d, Group == grp)
-  d1na = d1[,c(1,3,4)]
-  d1g = d1[,-c(2,3,4,5,10)]
-  d1na = melt(d1na)
-  d1g = melt(d1g)
+  d1 = d1[-c(1,5,10)]
+  d2 = melt(d1)
+  d2["Category"] = NA
+  d2$Category[which(d2$variable %in% c("NAData","ValidData"))] = "Validity"
+  d2$Category[which(d2$variable %in% c("Closed","Left","Center","Right"))] = "Eye Position"
+  d2$Category = factor(d2$Category, levels = c("Validity","Eye Position"))
   
-  bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
+  b = ggplot(d2, aes(x = Category, y = value, fill = variable))+geom_bar(stat = "identity", position = "fill") + xlab("") + ylab("") + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(grp) + labs(fill = "") + theme_bw()
   
-  bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
-  
-  if (grp %in% c("BL","BH")) {
-    bn = bn + xlab("")
-    bg = bg + xlab("")
-  }
   if (grp %in% c("CH","BH")) {
-    bn = bn + ylab("")
-    bg = bg + ylab("")
+    b = b + ylab("")
   }
-  
-  
-  b = ggarrange(bn, bg, nrow = 2)
   assign(paste0("b",grp),b)
 }
 
