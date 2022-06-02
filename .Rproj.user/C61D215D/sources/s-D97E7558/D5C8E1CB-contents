@@ -33,13 +33,16 @@ for (grp in unique(d$Group)) {
   
   bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
   
+  ggplot(x2, aes(x = Cat, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab(sub) + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(tr) 
+  + labs(fill = "Validity")
+  
   bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
   
   b = ggarrange(bn, bg, nrow = 2)
   assign(paste0("b",grp),b)
-  pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
-  plot(b)
-  dev.off()
+  # pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
+  # plot(b)
+  # dev.off()
 }
 
 for (grp in unique(d$Group)) {
@@ -71,8 +74,8 @@ for (grp in unique(d$Group)) {
 
 g = ggarrange(bBL , bBH, bCL, bCH, nrow = 2, ncol = 2, common.legend = TRUE, legend = "bottom")
 
-pdf("Plots/Gaze_Summary/Groupwise_Gaze.pdf", width = 14, height = 9.5)
-plot(g)
-dev.off()
+# pdf("Plots/Gaze_Summary/Groupwise_Gaze.pdf", width = 14, height = 9.5)
+# plot(g)
+# dev.off()
 
 g1 = bBL + bBH + bCL + bCH & theme(legend.position = "bottom")

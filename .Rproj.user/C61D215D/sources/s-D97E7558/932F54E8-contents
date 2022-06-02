@@ -21,29 +21,33 @@ library(patchwork)
 
 
 #Reading the Data
-d = read.csv("Data/GazeSummary_ParticipantLevel.csv")
+d = read.csv("Data/GazeSummary_TreatmentLevel.csv")
 
-for (grp in unique(d$Group)) {
-  print(grp)
-  d1 = filter(d, Group == grp)
-  d1na = d1[,c(1,3,4)]
-  d1g = d1[,-c(2,3,4,5,10)]
-  d1na = melt(d1na)
-  d1g = melt(d1g)
-  
-  bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
-  
-  ggplot(x2, aes(x = Cat, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab(sub) + scale_fill_manual(values = c("azure2","black","black","chartreuse2","brown1","deepskyblue")) + ggtitle(tr) 
-  + labs(fill = "Validity")
-  
-  bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
-  
-  b = ggarrange(bn, bg, nrow = 2)
-  assign(paste0("b",grp),b)
-  # pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
-  # plot(b)
-  # dev.off()
+for (sub in unique(d$Participant_ID)) {
+  print(sub)
+  d1 = filter(d, Participant_ID == sub)
+  for (tr in unique(d$Treatment)) {
+    print(tr)
+    d2 = filter(d1, Treatment == tr)
+    
+    dna = d1[,c(1,3,4)]
+    # dg = d1[,-c(2,3,4,5,10)]
+    # d1na = melt(d1na)
+    # d1g = melt(d1g)
+    # 
+    # bn = ggplot(d1na, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("") + ylab("%") + scale_fill_manual(values = c("azure2","black")) + ggtitle(grp) + labs(fill = "Validity")
+    # 
+    # bg = ggplot(d1g, aes(x = Participant_ID, y = value, fill = variable))+geom_bar(stat = "identity", color = "black") + xlab("Participant") + ylab("%") + scale_fill_manual(values = c("black","chartreuse2","brown1","deepskyblue")) + labs(fill = "Eye Position")
+    # 
+    # b = ggarrange(bn, bg, nrow = 2)
+    # assign(paste0("b",grp),b)
+    # pdf(paste0("Plots/Gaze_Summary/",grp,"_Gaze.pdf"))
+    # plot(b)
+    # dev.off()
+    
+  }
 }
+
 
 for (grp in unique(d$Group)) {
   print(grp)
@@ -74,8 +78,8 @@ for (grp in unique(d$Group)) {
 
 g = ggarrange(bBL , bBH, bCL, bCH, nrow = 2, ncol = 2, common.legend = TRUE, legend = "bottom")
 
-# pdf("Plots/Gaze_Summary/Groupwise_Gaze.pdf", width = 14, height = 9.5)
-# plot(g)
-# dev.off()
+pdf("Plots/Gaze_Summary/Groupwise_Gaze.pdf", width = 14, height = 9.5)
+plot(g)
+dev.off()
 
 g1 = bBL + bBH + bCL + bCH & theme(legend.position = "bottom")
