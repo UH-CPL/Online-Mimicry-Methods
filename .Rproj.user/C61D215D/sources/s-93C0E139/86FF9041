@@ -3,7 +3,7 @@
     "path": "C:/Users/cpladmin/Desktop/Online-Mimicry-Methods/dc10_Calculate_Blink_Rate.R",
     "project_path": "dc10_Calculate_Blink_Rate.R",
     "type": "r_source",
-    "hash": "0",
+    "hash": "3749013988",
     "contents": "",
     "dirty": false,
     "created": 1654239994069.0,
@@ -13,15 +13,15 @@
         "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "19,17",
-        "scrollLine": "0"
+        "cursorPosition": "42,223",
+        "scrollLine": "43"
     },
     "folds": "",
-    "lastKnownWriteTime": 1654245021,
+    "lastKnownWriteTime": 1654252701,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1654245021112,
+    "last_content_update": 1654252701913,
     "read_only": false,
     "read_only_alternatives": []
 }
