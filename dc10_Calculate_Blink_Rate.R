@@ -11,12 +11,14 @@ d$Treatment_Time = ceiling(d$Treatment_Time)
 
 sink(paste0("Logs/CalculateBlinkRate.txt"))
 
+df = data.frame()
 for (sub in unique(d$Participant)) {
     cat("\n\n\n\n==============================\n")
     cat(paste0("\n\n\n"),sub,"\n")
     d1 = filter(d, Participant_ID == sub)
+    dft = data.frame()
     
-    for (tr in unique(d1$Treatment)) {
+    for (tr in c("NA","RB","ST","PM","DT","PR")) {
         cat(paste0("\n",tr,"\n"))
         d2 = filter(d1, Treatment == tr)
         if (tr == "NA") {
@@ -90,11 +92,15 @@ for (sub in unique(d$Participant)) {
             }
           
         }
+        dft = rbind(dft, d2)
     }
+    write.csv(dft, paste0("Data/Presenter-Judges_FSPB+CJ+Gaze+Blink+ALLStats_AllT_1HzMean/",sub,".csv"), row.names = F)
     pg = ggarrange(pNA, pRB, pST, pPM, pDT, pPR, nrow = 6)
     pg = annotate_figure(pg, top = text_grob(paste0(sub,"  -  Blink Status"), face = "bold", size = 14))
-    
-
+    pdf(paste0("Plots/Blink_Subject_TreatmentWise_Portrait/", sub,"Blink.pdf"), width = 18, height = 9)
+    plot(pg)
+    dev.off()
+    df = rbind(df, dft)
 }
 
 
@@ -102,6 +108,6 @@ ee = Sys.time()
 
 ee-ss
 
-write.csv(d, "Data/Presenter-Judges_FGSPB_AllT_1HzMean_SemiFinal_2022-04-06_withCompositeJBinary.csv", row.names = F)
+write.csv(df, "Data/Presenter-Judges_FSPB+CJ+Gaze+Blink+ALLStats_AllT_1HzMean.csv", row.names = F)
 
 sink()
