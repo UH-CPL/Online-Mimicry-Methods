@@ -4,12 +4,13 @@ library(tidyverse)
 library(dplyr)
 library(readxl)
 library(zoo)
+library(ggpubr)
 
 d = read.csv("Data/Presenter-Judges_FSPB+CJ+Gaze+ALLStats_AllT_1HzMean_Clean.csv")
 d$Treatment[is.na(d$Treatment)] = "NA"
 d$Treatment_Time = ceiling(d$Treatment_Time)
 
-sink(paste0("Logs/CalculateBlinkRate.txt"))
+sink(paste0("Logs/CalculateBlinkRate+PlotBlinkData.txt"))
 
 df = data.frame()
 for (sub in unique(d$Participant)) {
@@ -24,10 +25,10 @@ for (sub in unique(d$Participant)) {
         if (tr == "NA") {
           d2$Treatment_Time = rep(seq(0, by = 1, length.out = nrow(d2)), each = 30)[1:nrow(d2)]
         }
-        l = d3$G_WOR[which(d3$G_Direction == "LEFT")]
-        c = d3$G_WOR[which(d3$G_Direction == "CENTER")]
-        r = d3$G_WOR[which(d3$G_Direction == "RIGHT")]
-        cl = d3$G_WOR[which(d3$G_Direction == "CLOSED")]
+        # l = d3$G_WOR[which(d3$G_Direction == "LEFT")]
+        # c = d3$G_WOR[which(d3$G_Direction == "CENTER")]
+        # r = d3$G_WOR[which(d3$G_Direction == "RIGHT")]
+        # cl = d3$G_WOR[which(d3$G_Direction == "CLOSED")]
         d2[c("BlinkStatus","BlinkRate")] = NA
         d2$BlinkStatus[which(d2$G_WOR < 5.7)] = 0
         d2$BlinkStatus[which(d2$G_WOR >= 5.7)] = 1
@@ -75,19 +76,24 @@ for (sub in unique(d$Participant)) {
             if (i == (mins+1)) {
                 start = end+1
                 end = start+sec
-                print(paste0(start," - ",end))
+                cat(paste0(" ",start," - ",end))
                 d3 = d2[which(d2$Treatment_Time >= start & d2$Treatment_Time <= end),]
                 if (dim(table(rle(d3$BlinkStatus)))[2] > 1) {
                   blrate = table(rle(d3$BlinkStatus)$values)[[2]]
                 }
                 if (dim(table(rle(d3$BlinkStatus)))[2] == 1) {
-                  if (unique(rle(d3$BlinkStatus)$values) == 1) {
+                  if (is.na(unique(rle(d3$BlinkStatus)$values)[1])) {
+                    blrate = NA
+                    next
+                  }
+                  if (unique(rle(d3$BlinkStatus)$values)[1] == 1) {
                     blrate = 999
                   }
-                  if (unique(rle(d3$BlinkStatus)$values) == 0) {
+                  if (unique(rle(d3$BlinkStatus)$values)[1] == 0) {
                     blrate = 0
                   }
                 }
+                cat(paste0("    -  ",blrate))
                 d2$BlinkRate[which(d2$Treatment_Time >= start & d2$Treatment_Time <= end)] = blrate
             }
           
@@ -103,11 +109,10 @@ for (sub in unique(d$Participant)) {
     df = rbind(df, dft)
 }
 
+write.csv(df, "Data/Presenter-Judges_FSPB+CJ+Gaze+Blink+ALLStats_AllT_1HzMean.csv", row.names = F)
 
 ee = Sys.time()
 
 ee-ss
-
-write.csv(df, "Data/Presenter-Judges_FSPB+CJ+Gaze+Blink+ALLStats_AllT_1HzMean.csv", row.names = F)
 
 sink()
