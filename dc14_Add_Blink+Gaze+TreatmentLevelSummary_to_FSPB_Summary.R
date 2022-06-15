@@ -5,6 +5,8 @@ library(dplyr)
 library(readxl)
 library(zoo)
 library(ggpubr)
+library(scales)
+library(rstatix)
 
 d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel.csv")
 d$Treatment[is.na(d$Treatment)] = "NA"
