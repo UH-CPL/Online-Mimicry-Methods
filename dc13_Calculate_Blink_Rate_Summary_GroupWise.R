@@ -6,13 +6,13 @@ library(readxl)
 library(zoo)
 library(ggpubr)
 
-d = read.csv("Data/Presenter-Judges_FSPB+CJ+Gaze(10Hz)+Blink+ALLStats_AllT_1HzMean_v2.csv")
+d = read.csv("Data/Presenter-Judges_FSPB+CJ+Gaze(10Hz)+Blink+ALLStats_AllT_1HzMean_v4.csv")
 d$Treatment[is.na(d$Treatment)] = "NA"
 d = d[,c(1,2,3,4,5,6,188,189)]
 f = read.csv("Data/GazeSummary_ParticipantLevel.csv")
 f["BlinkRate"] = NA
 
-sink(paste0("Logs/Blink_Gaze_Summary_GrouptWise_v2.txt"))
+sink(paste0("Logs/Blink_Gaze_Summary_GrouptWise_v3.txt"))
 
 for (sub in unique(d$Participant_ID)) {
   cat(paste0("\n",sub))
@@ -25,7 +25,7 @@ for (sub in unique(d$Participant_ID)) {
 
 cat("\n\n\n")
 
-write.csv(f, "Data/Blink+Gaze_Summary_GroupLevel_v2.csv", row.names = F)
+write.csv(f, "Data/Blink+Gaze_Summary_GroupLevel_v3.csv", row.names = F)
 
 cat(paste0("+++ Write Complete +++ \n\n\n\n"))
 

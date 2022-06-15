@@ -8,7 +8,7 @@ library(ggpubr)
 library(scales)
 library(rstatix)
 
-d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel.csv")
+d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel_v3.csv")
 d$Treatment[is.na(d$Treatment)] = "NA"
 
 f = read.csv("Data/Presenter-Judges_Summary_AllT_1HzMean_Clean_v2.csv")
@@ -16,7 +16,7 @@ f$Treatment[is.na(f$Treatment)] = "NA"
 f[c("Closed","Left","Right","Center","BlinkRate")] = NA
 
 
-sink(paste0("Logs/Add_Blink_Gaze_to_FSPB_CJ_ALLStats_Clean.txt"))
+sink(paste0("Logs/Add_Blink_Gaze_to_FSPB_CJ_ALLStats_Clean_v3.txt"))
 
 for (sub in unique(d$Participant_ID)) {
   cat(paste0("\n",sub,"\n\n"))
@@ -33,7 +33,7 @@ for (sub in unique(d$Participant_ID)) {
 cat("\n============================\n")
 cat("\n\n\n")
 
-write.csv(f, "Data/Presenter-Judges_AllSummary_AllT_1HzMean_Clean.csv", row.names = F)
+write.csv(f, "Data/Presenter-Judges_AllSummary_AllT_1HzMean_Clean_v3.csv", row.names = F)
 
 cat(paste0("+++ Write Complete +++ \n\n\n\n"))
 
