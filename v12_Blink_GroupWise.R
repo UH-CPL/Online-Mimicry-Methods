@@ -158,7 +158,7 @@ x1 = d[,c("Group2","BlinkRate")]
 p1 = ggplot(x1, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
 
-px <- ggwithinstats(
+px <- ggbetweenstats(
   data = x1,
   x = Group2,
   y = BlinkRate
@@ -207,7 +207,7 @@ px2 <- px1  +
   )
 
 ggsave(
-  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_NIvsI_PairedStudentTT_v2.png",
+  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_NIvsI_Welch_v2.png",
   plot = px2,
   width = 8,
   height = 8,
