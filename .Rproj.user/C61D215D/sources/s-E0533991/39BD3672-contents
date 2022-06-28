@@ -27,8 +27,6 @@ library(palmerpenguins)
 library(rstantools)
 library(PMCMRplus)
 
-sub = read.csv("Final Reports/Final Reports/Gaze_data_presentation_for_R_40_subjects.csv")
-sub = sub$Participant_ID
 
 #Reading the Data
 d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel_v3.csv")

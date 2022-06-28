@@ -15,7 +15,7 @@ library(GGally)
 library(BBmisc)
 library(scales)
 library(viridis)
-library(Scale)
+#library(Scales)
 library(ggnewscale)
 library(patchwork)
 library(gridExtra)
@@ -23,16 +23,13 @@ library(rstatix)
 
 
 #Reading the Data
-d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel.csv")
+d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel_v3.csv")
 d$Treatment[is.na(d$Treatment)] = "NA"
-d$BlinkRate[which(d$BlinkRate == -1)] = NA
-d$BlinkRate[which(d$BlinkRate == 999)] = NA
-d$BlinkRate[which(d$BlinkRate > 60)] = NA
-write.csv(d, "Data/Blink+Gaze_Summary_TreatmentLevel.csv", row.names = F)
 
 
-df1 = d[,c(2,12)]
-df1 = pivot_longer(df, -BlinkRate, names_to = "variables", values_to = "value")
+
+df1 = d[,c(2,3,12)]
+df1 = pivot_longer(df1, -BlinkRate, names_to = "variables", values_to = "value")
 st = df1 %>%
   group_by(variables) %>%
   adjust_pvalue(method = "BH") %>%
@@ -59,6 +56,8 @@ mp2 <- ggboxplot(
   ggtheme = theme_pubr(border = TRUE)
 ) +
   facet_wrap(~variable)
+
+st3 = stat.test %>% add_xy_position(x = "")
 
 
 for (grp in unique(d$Group)) {

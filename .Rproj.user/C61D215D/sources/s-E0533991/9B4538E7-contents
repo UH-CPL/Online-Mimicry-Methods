@@ -26,13 +26,12 @@ library(ggstatsplot)
 library(palmerpenguins)
 library(rstantools)
 library(PMCMRplus)
+library(patchwork)
 
-sub = read.csv("Final Reports/Final Reports/Gaze_data_presentation_for_R_40_subjects.csv")
-sub = sub$Participant_ID
 
 #Reading the Data
-d = read.csv("Data/Blink+Gaze_Summary_TreatmentLevel_v3.csv")
-d$Treatment[is.na(d$Treatment)] = "NA"
+d = read.csv("Data/Blink+Gaze_Summary_GroupLevel_v3.csv")
+# d["Group2"] = NA
 # d$Group2[which(d$Group %in% c("CH","BH"))] = "I"
 # d$Group2[which(d$Group %in% c("CL","BL"))] = "NI"
 
@@ -76,20 +75,20 @@ for (grp in unique(d$Group2)) {
   d2 = filter(d, Group2 == grp)
   assign(grp, d2$BlinkRate)
 }
-boxplot(I, NI)
+  boxplot(I, NI)
+  
+  
+  
+  
+  
 
-
-
-
-
-
-x = d[,c("Treatment","BlinkRate")]
+x = d[,c("Group","BlinkRate")]
 px = ggplot(x, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
 
-p <- ggwithinstats(
+p <- ggbetweenstats(
   data = x,
-  x = Treatment,
+  x = Group,
   y = BlinkRate
 )
 
@@ -136,7 +135,7 @@ p2 <- p1  +
   )
 
 ggsave(
-  filename = "Plots/TreatmentWise_BlinkRate/TreatmentWise_BlinkRate_x.png",
+  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate.png",
   plot = p2,
   width = 8,
   height = 8,
@@ -151,26 +150,12 @@ ggsave(
 
 
 
-xy = d[,c("Treatment","Group2","BlinkRate")]
-#x1 = melt(x1)
+x1 = d[,c("Group2","BlinkRate")]
 p1 = ggplot(x1, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
-na = filter(xy, Treatment == "NA")
-rb = filter(xy, Treatment == "RB")
-st = filter(xy, Treatment == "ST")
-pr = filter(xy, Treatment == "PR")
-pm = filter(xy, Treatment == "PM")
-dt = filter(xy, Treatment == "DT")
 
-q = dt
-
-# pxy <- ggwithinstats(
-#   data = q,
-#   x = Group2,
-#   y = BlinkRate
-# )
 px <- ggbetweenstats(
-  data = q,
+  data = x1,
   x = Group2,
   y = BlinkRate
 )
@@ -178,7 +163,7 @@ px <- ggbetweenstats(
 px1 <- px + 
   # Add labels and title
   labs(
-    x = "DT",
+    x = "",
     #y = "Bill Length",
     #title = "Distribution of bill length across penguins species"
   ) + 
@@ -218,7 +203,7 @@ px2 <- px1  +
   )
 
 ggsave(
-  filename = "Plots/TreatmentWise_BlinkRate/DT_BlinkRate_Welch.png",
+  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_NIvsI_Welch.png",
   plot = px2,
   width = 8,
   height = 8,
