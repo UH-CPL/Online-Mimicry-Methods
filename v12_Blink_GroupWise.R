@@ -34,6 +34,7 @@ sub = sub$Participant_ID
 
 #Reading the Data
 d = read.csv("Data/Blink+Gaze_Summary_GroupLevel_v3.csv")
+d = filter(d, Participant_ID %in% sub)
 # d["Group2"] = NA
 # d$Group2[which(d$Group %in% c("CH","BH"))] = "I"
 # d$Group2[which(d$Group %in% c("CL","BL"))] = "NI"
@@ -89,7 +90,7 @@ x = d[,c("Group","BlinkRate")]
 px = ggplot(x, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
 
-p <- ggbetweenstats(
+p <- ggwithinstats(
   data = x,
   x = Group,
   y = BlinkRate
@@ -138,7 +139,7 @@ p2 <- p1  +
   )
 
 ggsave(
-  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate.png",
+  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_v2.png",
   plot = p2,
   width = 8,
   height = 8,
@@ -157,7 +158,7 @@ x1 = d[,c("Group2","BlinkRate")]
 p1 = ggplot(x1, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
 
-px <- ggbetweenstats(
+px <- ggwithinstats(
   data = x1,
   x = Group2,
   y = BlinkRate
@@ -206,7 +207,7 @@ px2 <- px1  +
   )
 
 ggsave(
-  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_NIvsI_Welch.png",
+  filename = "Plots/GroupWise_BlinkRate/GroupWise_BlinkRate_NIvsI_PairedStudentTT_v2.png",
   plot = px2,
   width = 8,
   height = 8,
