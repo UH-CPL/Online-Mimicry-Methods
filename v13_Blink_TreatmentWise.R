@@ -163,7 +163,7 @@ pr = filter(xy, Treatment == "PR")
 pm = filter(xy, Treatment == "PM")
 dt = filter(xy, Treatment == "DT")
 
-q = dt
+q = pr
 
 # pxy <- ggwithinstats(
 #   data = q,
@@ -219,12 +219,13 @@ px2 <- px1  +
   )
 
 ggsave(
-  filename = "Plots/TreatmentWise_BlinkRate/DT_BlinkRate_Welch.png",
+  filename = "Plots/TreatmentWise_BlinkRate/PR_BlinkRate_Welch_v2.png",
   plot = px2,
   width = 8,
   height = 8,
   device = "png"
 )
+
 xy = d[,c("Treatment","Group2","BlinkRate")]
 #x1 = melt(x1)
 p1 = ggplot(x1, aes(x = Group, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
@@ -236,14 +237,14 @@ pr = filter(xy, Treatment == "PR")
 pm = filter(xy, Treatment == "PM")
 dt = filter(xy, Treatment == "DT")
 
-q = dt
+q = pr
 
 # pxy <- ggwithinstats(
 #   data = q,
 #   x = Group2,
 #   y = BlinkRate
 # )
-px <- ggbetweenstats(
+px <- ggwithinstats(
   data = q,
   x = Group2,
   y = BlinkRate
@@ -292,7 +293,7 @@ px2 <- px1  +
   )
 
 ggsave(
-  filename = "Plots/TreatmentWise_BlinkRate/DT_BlinkRate_Welch.png",
+  filename = "Plots/TreatmentWise_BlinkRate/PR_BlinkRate_StudentTT_v2.ppng",
   plot = px2,
   width = 8,
   height = 8,
