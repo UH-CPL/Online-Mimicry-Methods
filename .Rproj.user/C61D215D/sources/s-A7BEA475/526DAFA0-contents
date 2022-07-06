@@ -90,7 +90,7 @@ x = d[,c("GroupEmailCondition","BlinkRate")]
 px = ggplot(x, aes(x = GroupEmailCondition, y = BlinkRate)) + geom_boxplot(notch = T) + stat_summary(fun = mean, geom = "point", size = 3) + labs(x = "")
 
 
-p <- ggwithinstats(
+p <- ggbetweenstats(
   data = x,
   x = GroupEmailCondition,
   y = BlinkRate
