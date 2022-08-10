@@ -1,0 +1,42 @@
+library(tidyverse)
+library(ggpubr)
+
+
+d = read.csv("curatedCSV/BiographicPsychometric.csv")
+x = read.csv("curatedCSV/BRWaveform_time stats.csv")
+p = x$Participant_ID[1:58]
+p = p[! p %in% "T113"]
+
+d1 = filter(d, Participant_ID %in% p)
+d1 = d1[,c(1,3,4)]
+
+a = d1$Age[which(!is.na(d1$Age))]
+g = table(d1$Gender)
+
+d1$Gender[which(d1$Gender == 1)] = "Male"
+d1$Gender[which(d1$Gender == 2)] = "Female"
+
+ba = ggplot(d1, aes(y=Age, x = "Participant_ID")) + 
+  geom_boxplot() + stat_summary(fun = "mean", color = "red", shape = 19) +
+  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  xlab("") + ylab("Age [years]") + 
+  scale_y_continuous(breaks = seq(18, 52, 2)) + 
+  labs(subtitle = bquote(italic("n = ")~.(length(a)))) +
+  annotate("text", x = 1., y = 30, size = 4,
+           label = bquote(sigma~" = "~.(round(sd(a), digits = 2))))
+
+
+bg = ggplot(d1, aes(x = Gender)) + geom_bar(color = "black", 
+                                       fill = c("lightpink","lightskyblue"),
+                                       alpha = 0.7) + 
+  #theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+  xlab("") + ylab("Frequency") + 
+  labs(subtitle = bquote(italic("n = ")~.(nrow(d1)))) +
+  annotate("text", x = 1, y = 38, label = expression(italic("39"))) +
+  annotate("text", x = 2, y = 17, label = expression(italic("18")))
+
+b1 = ggarrange(ba, bg, nrow = 1, ncol = 2)
+pdf("Plots/biographic_57.pdf", width = 7, height = 7)
+plot(b1)
+dev.off()
+
