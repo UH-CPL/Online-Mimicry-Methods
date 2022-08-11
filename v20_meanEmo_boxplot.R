@@ -31,6 +31,70 @@ sub = sub[-24]
 d = filter(d, Participant_ID %in% sub)
 d = filter(d, Treatment == "PR")
 
+y = data.frame()
+t = data.frame(c1 = c("Afraid","Angry","Disgusted","Happy","Neutral","Sad","Surprised"),
+               c2 = NA)
+for (sub in unique(d$Participant_ID)) {
+  print(sub)
+  dx = filter(d, Participant_ID == sub)
+  
+  p = dx$F_1
+  l = dx$L_1
+  c = dx$C_1
+  r = dx$R_1
+  
+  p1 = as.data.frame((table(p)/sum(table(p)))*100)
+  colnames(p1)[1] = "em"
+  for (i in 1:nrow(p1)) {
+    print(p1$em[i])
+  }
+  
+  p1["label"] = "Participant"
+  
+  l1 = as.data.frame((table(l)/sum(table(l)))*100)
+  colnames(l1)[1] = "em"
+  dd <- data.frame(em = c("disgusted","surprised"), Freq = c(0,0))
+  l1 = rbind(l1[1:2,], dd[1,], l1[3:5,], dd[2,])
+  l1$em = capitalize(l1$em)
+  l1["label"] = "Left Judge"
+  
+  c1 = as.data.frame((table(c)/sum(table(c)))*100)
+  colnames(c1)[1] = "em"
+  dd = data.frame(em = c("disgusted","surprised"),
+                  Freq = c(0,0))
+  c1 = rbind(c1[1:2,], dd[1,], c1[3:5,], dd[2,])
+  c1$em = capitalize(c1$em)
+  c1["label"] = "Center Judge"
+  
+  r1 = as.data.frame((table(r)/sum(table(r)))*100)
+  colnames(r1)[1] = "em"
+  dd = data.frame(em = c("disgusted","surprised"),
+                  Freq = c(0,0))
+  r1 = rbind(r1[1:2,], dd[1,], r1[3:5,], dd[2,])
+  r1$em = capitalize(r1$em)
+  r1["label"] = "Right Judge"
+  
+  x = rbind(p1, l1, c1, r1)
+  x["Participant"] = sub
+  
+  y = rbind(y,x)
+}
+
+
+dp = filter(y, label == "Participant")
+dl = filter(y, label == "Left Judge")
+dc = filter(y, label == "Center Judge")
+dr = filter(y, label == "Right Judge")
+
+ggplot(dp, aes(y = Freq, x = em)) + geom_boxplot() + xlab("") + ylab("Frame count") + 
+  ggtitle("Participant") +
+  theme(axis.ticks.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(hjust = 0.5))
+
+
+
+
 p = d$F_1
 l = d$L_1
 c = d$C_1
@@ -68,7 +132,7 @@ pp = ggplot(p1, aes(x = p, y = Freq)) +
         #plot.background = element_rect(colour = "black", size = 2),
         # panel.background = element_rect(fill = "white"),
         # panel.grid = element_line(colour = "grey")
-        )
+  )
 
 pl = ggplot(l1, aes(x = l, y = Freq)) + 
   geom_bar(stat = 'identity', color = clr, fill = clr) +
@@ -81,12 +145,12 @@ pl = ggplot(l1, aes(x = l, y = Freq)) +
         #plot.background = element_rect(colour = "black", size = 2),
         # panel.background = element_rect(fill = "white"),
         # panel.grid = element_line(colour = "grey")
-        )
+  )
 
 pc = ggplot(c1, aes(x = c, y = Freq)) + 
   geom_bar(stat = 'identity', color = clr, fill = clr) +
   xlab("") + 
-  ylab("observation (%)") + 
+  ylab("") + 
   ggtitle("Center Judge") + 
   theme(axis.ticks.x = element_blank(),
         axis.ticks.y = element_blank(),
@@ -94,7 +158,7 @@ pc = ggplot(c1, aes(x = c, y = Freq)) +
         #plot.background = element_rect(colour = "black", size = 2),
         # panel.background = element_rect(fill = "white"),
         # panel.grid = element_line(colour = "grey")
-        )
+  )
 
 pr = ggplot(r1, aes(x = r, y = Freq)) + 
   geom_bar(stat = 'identity', color = clr, fill = clr) +
@@ -107,11 +171,11 @@ pr = ggplot(r1, aes(x = r, y = Freq)) +
         #plot.background = element_rect(colour = "black", size = 2),
         # panel.background = element_rect(fill = "white"),
         # panel.grid = element_line(colour = "grey")
-        )
+  )
 
 
 x = ggarrange(pp, pl, pc, pr, nrow = 2, ncol = 2)
-pdf("Plots/emotion_barplot_PR_40.pdf", width = 12, height = 9)
+pdf("Plots/emotion_boxplot_PR_40.pdf", width = 12, height = 9)
 plot(x)
 dev.off()
 
