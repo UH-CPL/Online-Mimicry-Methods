@@ -29,7 +29,7 @@ d = read.csv("Final Reports/Final Reports/Judges-Presenter_1Hz_final.csv")
 sub = read.csv("Final Reports/Final Reports/Gaze_data_presentation_for_R_40_subjects.csv")$Participant_ID
 sub = sub[-24]
 d = filter(d, Participant_ID %in% sub)
-d = filter(d, Treatment == "PR")
+d = filter(d, Treatment == "DT")
 
 p = d$F_1
 l = d$L_1
@@ -115,4 +115,6 @@ pdf("Plots/emotion_barplot_PR_40.pdf", width = 12, height = 9)
 plot(x)
 dev.off()
 
-
+ggplot(d1, aes(fill = variable, y = value, x = Participant_ID)) + 
+  geom_bar(position = "stack", stat = "identity") +
+  scale_fill_manual('variable', values = c("grey","blue","green","red")) + scale_x_discrete(labels = lbl)

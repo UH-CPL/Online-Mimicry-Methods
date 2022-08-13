@@ -1,0 +1,630 @@
+### Code updated: 02 June 2022
+### This is the code for the presentation data 
+
+dir = dirname(rstudioapi::getSourceEditorContext()$path)
+setwd(dir)
+
+### _____________________________________________________________________
+library(gplots)
+library(lme4)
+library(sjPlot)
+library(lattice)
+library(ltm)
+library(MASS)
+library(mclogit)
+library(memisc)
+library(mlogit)
+library(lmtest)
+library(ggplot2)
+
+### Here we have a list of Subjects that gave a presentation
+Sub<-c("T005","T009","T011","T016","T019","T021","T032","T035","T046","T051",
+       "T061","T063","T064","T065","T066","T068","T077","T078","T079","T082",
+       "T083","T084","T091","T092","T093","T094","T096","T098","T099","T106",
+       "T112","T114","T121","T122","T124","T126","T128","T138","T141","T144",
+       "T151","T152","T154","T157","T162","T166","T172","T173","T174","T175",
+       "T176","T178")
+
+N<-length(Sub)  ### Total number of subjects participating in the study
+
+### Names used multiple times in the code
+EmNames<-c("An","Di","Af","Ha","Sa","Su","Ne")  ### Emotion Names
+EmColor<-c("red","orange","blue","green","purple","yellow","cyan")  ### Emotion colors in plots
+EmNamesbin<-c("N","E") ### Binary Emotion Names (N=Neutral, E=Emotion)
+EmColorbin<-c("cyan","brown") ### Binary Emotion colors in plots
+
+
+#setwd("...Directory where the data are ....")
+
+
+### Here we will load the latest version of the data (03 Sept 2020)
+### ignore the fact that the name of the variable tmpData01Sept refers to 01 Sept
+### The next refers to the data at a second level (i.e. 1 Hz)
+### Name of the file: Judges-Presenter_1Hz_final.csv
+tmpData01Sept<-read.csv("Judges-Presenter_1Hz_final.csv",header=T,sep=",")
+
+RV<-dim(tmpData01Sept)[2]  ### Recorded Variables in the study
+
+### Here we record the maximum length of the presentation over all subjects
+### which we will need to create the maximum number of rows of 3D array
+### where Subjects will be stuck one on the top of the other (i.e. rows=
+### maximum presentation length, columns=study variables, layers=subjects)
+PRmaxL<-table(tmpData01Sept[,1])
+MPRmaxL<-max(PRmaxL)
+
+
+### We will create a 3d array named Dpr (Data Presentation) that will have:
+### rows=MPRmaxL columns=163 (variables of the study) and layers=N (number of subjects)
+Dpr<-array(NA,dim=c(MPRmaxL,RV,N))
+tmpl<-1
+for (i in Sub){
+  tmpRowInd<-tmpData01Sept[,1]==i
+  tmpD<-tmpData01Sept[tmpRowInd,]
+  tmpPRind<-which(tmpD[,33]=="PR")
+  tmpD1<-as.matrix(tmpD[tmpPRind,])
+  if (dim(tmpD1)[1]>0){
+    Dpr[1:length(tmpPRind),,tmpl]<-tmpD1
+    print(i)
+  } else {
+    print(paste("No Presentation Data for Subject",i))
+  }
+  tmpl<-tmpl+1
+} 
+
+### Here we have a list of Subjects that gave a presentation
+Sub<-c("S005","S009","S011","S016","S019","S021","S032","S035","S046","S051",
+       "S061","S063","S064","S065","S066","S068","S077","S078","S079","S082",
+       "S083","S084","S091","S092","S093","S094","S096","S098","S099","S106",
+       "S112","S114","S121","S122","S124","S126","S128","S138","S141","S144",
+       "S151","S152","S154","S157","S162","S166","S172","S173","S174","S175",
+       "S176","S178")
+
+
+### Next we will record the Data for emotions (Dem) of the subject (FACS+sound) 
+### and the emotions (FACS) of the three judges (Left, Center, Right). The 
+### relevant variables (columns) that we will record in matrix Dem is:
+### Columns 4-10: FACS for Subject
+### Columns 28-32: Sound based emotion for Subject
+### Columns 40-46: FACS for Left Judge
+### Columns 50-56: FACS for Center Judge
+### Columns 60-66: FACS for Right Judge
+EmV<-c(4:10,28:32,40:46,50:56,60:66)  ### Emotion related Variables
+LEmV<-length(EmV)
+Dem<-array(NA,dim=c(MPRmaxL,LEmV,N))
+for (k in 1:N){ ### here we loop over Subjects
+  Dem[,1:7,k]<-as.numeric(Dpr[,4:10,k]) ### FACS for Subject
+  Dem[,8:14,k]<-as.numeric(Dpr[,40:46,k]) ### FACS for Left Judge
+  Dem[,15:21,k]<-as.numeric(Dpr[,50:56,k]) ### FACS for Center Judge
+  Dem[,22:28,k]<-as.numeric(Dpr[,60:66,k]) ### FACS for Right Judge
+  Dem[,29:33,k]<-as.numeric(Dpr[,28:32,k]) ### Sound based emotion for Subject
+}
+
+### In the following matrix we will record the average of each of the 
+### Emotion related Variables per Subject. So rows=number of Subjects
+### columns=all the EmV variables
+MeanEm<-matrix(NA,N,LEmV)
+for (k in 1:N){ ### here we loop over Subjects
+  MeanEm[k,]<-colMeans(Dem[,,k],na.rm=T)
+}
+
+
+### Plot of Mean FACS values (all emotions)
+ylim1<-c(0,max(MeanEm[,1:28],na.rm=T))
+par(mfrow=c(2,2),mar=c(2,2,3,2),oma=c(0.5,0.5,0.5,0.5))
+boxplot(MeanEm[,1:7],names=EmNames,ylim=ylim1,col=EmColor,main="Participant Means")
+boxplot(MeanEm[,8:14],names=EmNames,ylim=c(0,1),col=EmColor,main="Left Judge Means")
+boxplot(MeanEm[,15:21],names=EmNames,ylim=ylim1,col=EmColor,main="Center Judge Means")
+boxplot(MeanEm[,22:28],names=EmNames,ylim=ylim1,col=EmColor,main="Right Judge Means")
+
+
+
+### Here we will record the Dominant Emotion at each recorded frame of each
+### subject and judge of the study. DomEm will be an array with rows=MPRmaxL,
+### columns=5 (Col1=dominant FACS emotion of Subject, Col2-4: dominant FACS 
+### emotion of Left/Center/Right Judge, Col5=dominant Speech emotion of Subject)
+DomEm<-array(NA,dim=c(MPRmaxL,5,N))
+for (k in 1:N){ ### here we loop over Subjects
+  for (i in 1:MPRmaxL){ ### here we loop over frames
+    if (sum(!is.na(Dem[i,1:7,k]))==7){  ### check that we have no NA data
+      DomEm[i,1,k]<-which.max(Dem[i,1:7,k]) ###Dominant FACS Subject
+    }
+    if (sum(!is.na(Dem[i,8:14,k]))==7){  ### check that we have no NA data
+      DomEm[i,2,k]<-which.max(Dem[i,8:14,k]) ###Dominant FACS Left Judge
+    }
+    if (sum(!is.na(Dem[i,15:21,k]))==7){  ### check that we have no NA data
+      DomEm[i,3,k]<-which.max(Dem[i,15:21,k]) ###Dominant FACS Center Judge
+    }
+    if (sum(!is.na(Dem[i,22:28,k]))==7){  ### check that we have no NA data
+      DomEm[i,4,k]<-which.max(Dem[i,22:28,k]) ###Dominant FACS Right Judge
+    }
+    if (sum(!is.na(Dem[i,29:33,k]))==5){  ### check that we have no NA data
+      DomEm[i,5,k]<-which.max(Dem[i,29:33,k]) ###Dominant Speech Subject
+    }
+  }
+  print(k)
+}
+
+### These are the % of each Dominant emotion of Subject FACS during presentations
+rbind(EmNames,round(prop.table(table(DomEm[,1,]))*100,2))
+
+
+### Here we will find the length (in frames) of the NOT-missing emotion data
+### for each subject and each of the judges. We will ignore the speech and 
+### concentrate only on FACS (of Subject and the three judges).
+### In the matrix DomEmLength we will put how many non-NA frames we have for
+### each subject (rows) with col1=Subject's not-NA FACS frames and col2-4=
+### not-NA FACS frames of the Left/Center/Right judges respectively
+DomEmLength<-matrix(NA,N,4)
+for (k in 1:N){ ### here we loop over Subjects
+  for (j in 1:4){ ### here we loop over Subject (1) and Judges (2-4)
+    DomEmLength[k,j]<-sum(!is.na(DomEm[,j,k]))
+  }
+}
+
+
+cbind(Sub,DomEmLength[,1])
+
+
+### report the minimum Length (over Subject, ignore judges)
+MinDomEmLength<-rep(NA,N)   
+for (i in 1:N){ ### here we loop over Subjects
+  MinDomEmLength[i]<-min(DomEmLength[i,1],na.rm=T)
+}
+sort(MinDomEmLength)
+
+### Here we record which subjects have too few response data (i.e. Subject's FACS<cutoff)
+#Cutoff<-30 ### The threshold of frames below which we exclude the case for data at 1Hz LEVEL
+### Since with the Gaze data we lose a subject that has NAs we will include also
+### the subject that has data for 27 seconds and so we will move the cutoff a bit lower
+### In this way we will end up with 40 subjects in the study.
+Cutoff<-25 ### The threshold of frames below which we exclude the case for data at 1Hz LEVEL
+ExcludeSubjectsInd<-which(MinDomEmLength<Cutoff)
+ExcludeSubjects<-Sub[which(MinDomEmLength<Cutoff)]
+ExcludeSubjectsFrames<-MinDomEmLength[MinDomEmLength<Cutoff]
+
+ExcludeSubjects
+ExcludeSubjectsFrames
+
+
+
+### Here we will collect the data that we will use for the analysis in DAarray:
+### rows are the frames of the presentation, layers are the subjects and
+### col1: binary with 0=Neutral, 1=Emotion FACS for SUBJECT
+### col2: binary with 0=Neutral, 1=Emotion FACS for committee, where to get
+###       0 we need to have all three judges to be Neutral. If at least one
+###       of the three judges is NA then we will have NA for the committee
+### col3: binary with 0=Neutral, 1=Emotion SPEECH for SUBJECT
+DAarray<-array(NA,dim=c(MPRmaxL,3,N))
+for (k in 1:N){ ### here we loop over Subjects
+  ### This is for the Subject's FACS
+  DAarray[,1,k]<-DomEm[,1,k]
+  DAarray[(DAarray[,1,k]!=7),1,k]<-1  ### Subject FACS Emotion
+  DAarray[(DAarray[,1,k]==7),1,k]<-0  ### Subject FACS Neutral
+  ### This is for the Committee's FACS
+  tmpD<-DomEm[,2:4,k]
+  tmpD[(tmpD!=7)]<-1  ### Judges FACS Emotion
+  tmpD[(tmpD==7)]<-0  ### Judges FACS Neutral
+  DAarray[,2,k]<-rowSums(tmpD)
+  DAarray[(DAarray[,2,k]!=0),2,k]<-1  ### At least one Judge is non-Neutral and we have no NAs
+  ### This is for the Subject's speech
+  DAarray[,3,k]<-DomEm[,5,k]
+  DAarray[(DAarray[,3,k]!=5),3,k]<-1  ### Subject Speech Emotion
+  DAarray[(DAarray[,3,k]==5),3,k]<-0  ### Subject Speech Neutral
+}
+
+table(DAarray[,1,])
+
+### Here we will have the same array as above but instead of having the 
+### subject emotions binary we will have them in four categories:
+### Neutral - Angry & Disgusted - Afraid & Surprised - Sad - Happy
+### From the algorithm we have: 
+### 1=Angry, 2=Disgusted, 3=Afraid, 4=Happy, 5=Sad, 6=Surprised, 7=Neutral
+DAarrayMULT<-array(NA,dim=c(MPRmaxL,3,N))
+for (k in 1:N){ ### here we loop over Subjects
+  ### This is for the Subject's FACS
+  #DAarrayMULT[,1,k]<-DomEm[,1,k]
+  DAarrayMULT[,1,k]<-DomEm[,1,k]  
+  DAarrayMULT[(DomEm[,1,k]==7),1,k]<-0  ### Subject FACS Neutral
+  DAarrayMULT[(DomEm[,1,k]==5),1,k]<-1  ### Subject FACS Sad
+  DAarrayMULT[(DomEm[,1,k]==4),1,k]<-2  ### Subject FACS Happy
+  DAarrayMULT[(DomEm[,1,k]==1),1,k]<-3  ### Subject FACS Other
+  DAarrayMULT[(DomEm[,1,k]==2),1,k]<-3  ### Subject FACS Other 
+  DAarrayMULT[(DomEm[,1,k]==3),1,k]<-3  ### Subject FACS Other 
+  DAarrayMULT[(DomEm[,1,k]==6),1,k]<-3  ### Subject FACS Other 
+  ###DAarrayMULT[(DomEm[,1,k]==1),1,k]<-1  ### Subject FACS Angry & Disgusted
+  ###DAarrayMULT[(DomEm[,1,k]==2),1,k]<-1  ### Subject FACS Angry & Disgusted
+  ###DAarrayMULT[(DomEm[,1,k]==3),1,k]<-2  ### Subject FACS Afraid & Surprised
+  ###DAarrayMULT[(DomEm[,1,k]==6),1,k]<-2  ### Subject FACS Afraid & Surprised
+  ###DAarrayMULT[(DomEm[,1,k]==5),1,k]<-3  ### Subject FACS Sad
+  ###DAarrayMULT[(DomEm[,1,k]==4),1,k]<-4  ### Subject FACS Happy  
+
+  ### This is for the Committee's FACS binary (we will not use them either way)
+  tmpD<-DomEm[,2:4,k]
+  tmpD[(tmpD!=7)]<-1  ### Judges FACS Emotion
+  tmpD[(tmpD==7)]<-0  ### Judges FACS Neutral
+  DAarrayMULT[,2,k]<-rowSums(tmpD)
+  DAarrayMULT[(DAarrayMULT[,2,k]!=0),2,k]<-1  ### At least one Judge is non-Neutral and we have no NAs
+  ### This is for the Subject's speech
+  DAarrayMULT[,3,k]<-DomEm[,5,k]
+  DAarrayMULT[(DAarrayMULT[,3,k]!=5),3,k]<-1  ### Subject Speech Emotion
+  DAarrayMULT[(DAarrayMULT[,3,k]==5),3,k]<-0  ### Subject Speech Neutral
+}
+
+table(DAarrayMULT[,1,])
+
+
+
+### We will run the model with the multiple response so
+### we will replace the Bianry by the multinomial case
+DAarray[,1,]<-DAarrayMULT[,1,]
+
+
+
+### Subject's FACS and Committee's FACS available data points
+#for (k in 1:N){
+#  print(paste("Subject",Sub[k]))
+#  print(sum(table(factor(DAarray[,1,k],levels = 0:1),factor(DAarray[,2,k],levels = 0:1))))
+#}
+
+### Subject's FACS available data points
+for (k in 1:N){
+  print(paste("Subject",Sub[k]))
+  print(sum(table(factor(DAarray[,1,k],levels = 0:4))))
+}
+
+
+### Here we will run the mixed effects model using only the Subjects that
+### has at least n=Cutoff (for 1 Hz) data of FACS for Subject
+ExcludeSubjectsBivariate<-NA
+for (k in 1:N){ ### here we loop over Subjects
+  ### Tables with BINARIZED FACS
+  TablesubcommFB<-table(factor(DAarray[,1,k],levels = 0:4))
+  if (sum(TablesubcommFB)<Cutoff){    ### for 1Hz data
+    ExcludeSubjectsBivariate<-c(ExcludeSubjectsBivariate,k)
+  }  
+}  
+ExcludeSubjectsBivariate<-ExcludeSubjectsBivariate[-1]
+Sub[ExcludeSubjectsBivariate]
+
+
+
+### Here we will define the variables that will be used in the linear model
+### (mixed effects logistic regression)
+
+### We will merge the "BL" and "CL" into the class "L" (Low) while the 
+### "BH" and "CH" will form class "H" (High)
+tmpGr<-rep(NA,N)
+tmpAge<-rep(NA,N)  ### Age
+tmpGender<-rep(NA,N)  ### Gender
+tmpPPpres<-rep(NA,N) ### Perinasal Perspiration during the PRESENTATION segment
+tmpPPbase<-rep(NA,N) ### Perinasal Perspiration during the BASELINE segment
+tmpB5A<-rep(NA,N)  ### BFI_Agreeableness
+tmpB5C<-rep(NA,N)  ### BFI_Conscientiousness
+tmpB5E<-rep(NA,N)  ### BFI_Extraversion
+tmpB5N<-rep(NA,N)  ### BFI_Neuroticism
+tmpB5O<-rep(NA,N)  ### BFI_Openness
+tmpERQcr<-rep(NA,N)  ### ERQ_Cognitive_Reappraisal	
+tmpERQes<-rep(NA,N)  ### ERQ_Expressive_Suppression
+tmpWC<-rep(NA,N)  ### Word_Count
+tmpGEpW<-rep(NA,N) ### Grammar_Errors_WC
+tmpMEpW<-rep(NA,N) ### Mechanic_Errors_WC
+tmpWP<-rep(NA,N)   ### Writing proficiency
+tmpCS<-rep(NA,N)   ### Criterion score
+
+for (k in 1:N){ ### here we loop over Subjects
+  if (sum((unique(Dpr[,34,k])=="BL"),na.rm=T)|sum((unique(Dpr[,34,k])=="CL"),na.rm=T)){
+    tmpGr[k]<-"L"
+  }
+  if (sum((unique(Dpr[,34,k])=="BH"),na.rm=T)|sum((unique(Dpr[,34,k])=="CH"),na.rm=T)){
+    tmpGr[k]<-"H"
+  }
+  if (sum(!is.na(Dpr[,137,k]))>0){
+    tmpAge[k]<-mean(as.numeric(Dpr[,137,k]),na.rm=T)
+  }
+  if (sum((unique(Dpr[,138,k])==1),na.rm=T)){
+    tmpGender[k]<-"M"
+  }
+  if (sum((unique(Dpr[,138,k])==2),na.rm=T)){
+    tmpGender[k]<-"F"
+  }
+  if (sum(!is.na(Dpr[,72,k]))>0){
+    tmpPPpres[k]<-mean(as.numeric(Dpr[,72,k]),na.rm=T)
+  }
+  if (sum(!is.na(Dpr[,167,k]))>0){
+    tmpPPbase[k]<-as.numeric(names(table(Dpr[,167,k])))
+  }
+  if (sum(!is.na(Dpr[,144,k]))>0){
+    tmpB5A[k]<-as.numeric(names(table(Dpr[,144,k])))
+  }
+  if (sum(!is.na(Dpr[,145,k]))>0){
+    tmpB5C[k]<-as.numeric(names(table(Dpr[,145,k])))
+  }
+  if (sum(!is.na(Dpr[,146,k]))>0){
+    tmpB5E[k]<-as.numeric(names(table(Dpr[,146,k])))
+  }
+  if (sum(!is.na(Dpr[,147,k]))>0){
+    tmpB5N[k]<-as.numeric(names(table(Dpr[,147,k])))
+  }
+  if (sum(!is.na(Dpr[,148,k]))>0){
+    tmpB5O[k]<-as.numeric(names(table(Dpr[,148,k])))
+  }
+  if (sum(!is.na(Dpr[,149,k]))>0){
+    tmpERQcr[k]<-as.numeric(names(table(Dpr[,149,k])))
+  }
+  if (sum(!is.na(Dpr[,150,k]))>0){
+    tmpERQes[k]<-as.numeric(names(table(Dpr[,150,k])))
+  }
+  if (sum(!is.na(Dpr[,158,k]))>0){
+    tmpWC[k]<-as.numeric(names(table(Dpr[,158,k])))
+  }
+  if (sum(!is.na(Dpr[,161,k]))>0){
+    tmpGEpW[k]<-as.numeric(names(table(Dpr[,161,k])))
+  }
+  if (sum(!is.na(Dpr[,164,k]))>0){
+    tmpMEpW[k]<-as.numeric(names(table(Dpr[,164,k])))
+  }
+  if (sum(!is.na(Dpr[,143,k]))>0){
+    tmpWP[k]<-as.numeric(names(table(Dpr[,143,k])))
+  }
+  if (sum(!is.na(Dpr[,160,k]))>0){
+    tmpCS[k]<-as.numeric(names(table(Dpr[,160,k])))
+  }
+}
+tmpGr<-factor(tmpGr,levels = c("L","H"))  
+tmpGender<-factor(tmpGender,levels = c("M","F"))  
+tmpPP<-tmpPPpres-tmpPPbase  ### PP signal normalized index
+
+### Apppart from the 9 ExcludeSubjectsBivariate Subjects due to low counts 
+### "S011" "S032" "S035" "S091" "S092" "S093" "S094" "S122" "S157"
+### in the bivariate data we will also exclude two more subjects that did not
+### have data for Big 5 Agreeableness and ERQ score which are S082 and S096. 
+### So we are left with 52-9-2=41 Subjects for the analysis
+SubjectsForAnalysis<-1:N
+SubjectsForAnalysis<-SubjectsForAnalysis[-unique(c(ExcludeSubjectsBivariate,which(is.na(tmpB5A))))]
+SubjectsForAnalysis
+Sub[SubjectsForAnalysis]
+length(SubjectsForAnalysis)
+
+tmpGr1<-tmpGr[SubjectsForAnalysis]
+tmpGr1<-factor(tmpGr1,levels = c("L","H"),labels = c("NI","I"))
+tmpAge1<-tmpAge[SubjectsForAnalysis]
+tmpGender1<-tmpGender[SubjectsForAnalysis]
+tmpPP1<-tmpPP[SubjectsForAnalysis]
+tmpB5A1<-tmpB5A[SubjectsForAnalysis]
+tmpB5C1<-tmpB5C[SubjectsForAnalysis]	
+tmpB5E1<-tmpB5E[SubjectsForAnalysis]
+tmpB5N1<-tmpB5N[SubjectsForAnalysis]
+tmpB5O1<-tmpB5O[SubjectsForAnalysis]
+tmpERQcr1<-tmpERQcr[SubjectsForAnalysis]
+tmpERQes1<-tmpERQes[SubjectsForAnalysis]
+tmpWC1<-tmpWC[SubjectsForAnalysis]
+tmpGEpW1<-tmpGEpW[SubjectsForAnalysis]
+tmpMEpW1<-tmpMEpW[SubjectsForAnalysis]
+tmpWP1<-tmpWP[SubjectsForAnalysis]
+tmpCS1<-tmpCS[SubjectsForAnalysis]
+
+
+
+### Plot of Mean FACS values (all emotions)
+ylim1<-c(0,max(MeanEm[,1:28],na.rm=T))
+par(mfrow=c(2,2),mar=c(2,2,3,2),oma=c(0.5,0.5,0.5,0.5))
+boxplot(MeanEm[SubjectsForAnalysis,1:7],names=EmNames,ylim=ylim1,col=EmColor,main="Participant Means")
+boxplot(MeanEm[SubjectsForAnalysis,8:14],names=EmNames,ylim=c(0,1),col=EmColor,main="Left Judge")
+boxplot(MeanEm[SubjectsForAnalysis,15:21],names=EmNames,ylim=ylim1,col=EmColor,main="Center Judge")
+boxplot(MeanEm[SubjectsForAnalysis,22:28],names=EmNames,ylim=ylim1,col=EmColor,main="Right Judge")
+
+
+### Here we will provide descriptive analysis per group for all variables: 
+
+### Descriptive Statistic (ds) variables
+Yds<-cbind(tmpAge1,tmpPP1,tmpB5A1,tmpB5C1,tmpB5E1,tmpB5N1,tmpB5O1,tmpERQcr1,
+           tmpERQes1,tmpWC1,tmpGEpW1,tmpMEpW1,tmpWP1,tmpCS1)
+Ydsnames<-c("Age","PPnorm","B5_A","B5_C","B5_E","B5_N","B5_O","ERQ_cr",
+            "ERQ_es","WC","GEpW","MEpW","WP","CS")
+par(mfrow=c(4,4),mar=c(2,2,3,2),oma=c(0.5,0.5,0.5,0.5))
+barplot(table(tmpGr1),beside=T,col=c("green","red"),ylab="",xlab="",main="Group")
+barplot(table(tmpGender1),beside=T,col=c("blue","pink"),ylab="",xlab="",main="Gender")
+for (k in 1:length(Ydsnames)){
+  tmpTtest<-t.test(Yds[,k]~tmpGr1)
+  boxplot(Yds[,k]~tmpGr1,col=c("green","red"),
+          main=paste(Ydsnames[k],"\n p-value =",round(tmpTtest$p.value,4)))
+}
+
+
+
+tmpY<-c(DAarray[,1,1])  ### Subject's FACS (response)
+tmpX<-c(DAarray[,2,1])  ### Committee's FACS (fixed effect)
+S<-rep(Sub[1],MPRmaxL)  ### Subject ID (random effects)
+Gr<-rep(tmpGr[1],MPRmaxL) ### L/H Group (fixed effect)
+Age<-rep(tmpAge[1],MPRmaxL) ### Age
+Gender<-rep(tmpGender[1],MPRmaxL) ### Gender
+PPn<-rep(tmpPP[1],MPRmaxL) ### Normalized Perinasal Perspiration mean (fixed effect)
+B5Agr<-rep(tmpB5A[1],MPRmaxL) ### BFI_Agreeableness (fixed effect)
+B5C<-rep(tmpB5C[1],MPRmaxL) ### BFI_Conscientiousness (fixed effect)
+B5E<-rep(tmpB5E[1],MPRmaxL) ### BFI_Extraversion (fixed effect)
+B5N<-rep(tmpB5N[1],MPRmaxL) ### BFI_Neuroticism (fixed effect)
+B5O<-rep(tmpB5O[1],MPRmaxL) ### BFI_Openness (fixed effect)
+ERQcr<-rep(tmpERQcr[1],MPRmaxL) ### ERQ_Cognitive_Reappraisal (fixed effect)
+ERQes<-rep(tmpERQes[1],MPRmaxL) ### ERQ_Expressive_Suppression (fixed effect)
+WC<-rep(tmpWC[1],MPRmaxL) ### Word_Count
+GEpW<-rep(tmpGEpW[1],MPRmaxL) ### Grammar_Errors_WC (fixed effect)
+MEpW<-rep(tmpMEpW[1],MPRmaxL) ### Mechanic_Errors_WC (fixed effect)
+WP<-rep(tmpWP[1],MPRmaxL)   ### Writing proficiency
+CS<-rep(tmpCS[1],MPRmaxL)   ### Criterion score
+
+for (k in 2:N){ ### here we loop over Subjects
+#  if (sum(k==ExcludeSubjectsBivariate)==0){
+  if (sum(k==SubjectsForAnalysis)==1){
+    tmpY<-c(tmpY,DAarray[,1,k])
+    tmpX<-c(tmpX,DAarray[,2,k])
+    S<-c(S,rep(Sub[k],MPRmaxL))
+    Gr<-c(Gr,rep(tmpGr[k],MPRmaxL))
+    Age<-c(Age,rep(tmpAge[k],MPRmaxL)) ### Age
+    Gender<-c(Gender,rep(tmpGender[k],MPRmaxL)) ### Gender
+    PPn<-c(PPn,rep(tmpPP[k],MPRmaxL)) ### Normalized Perinasal Perspiration mean (fixed effect)
+    B5Agr<-c(B5Agr,rep(tmpB5A[k],MPRmaxL)) ### BFI_Agreeableness (fixed effect)
+    B5C<-c(B5C,rep(tmpB5C[k],MPRmaxL)) ### BFI_Conscientiousness (fixed effect)
+    B5E<-c(B5E,rep(tmpB5E[k],MPRmaxL)) ### BFI_Extraversion (fixed effect)
+    B5N<-c(B5N,rep(tmpB5N[k],MPRmaxL)) ### BFI_Neuroticism (fixed effect)
+    B5O<-c(B5O,rep(tmpB5O[k],MPRmaxL)) ### BFI_Openness (fixed effect)
+    ERQcr<-c(ERQcr,rep(tmpERQcr[k],MPRmaxL)) ### ERQ_Cognitive_Reappraisal (fixed effect)
+    ERQes<-c(ERQes,rep(tmpERQes[k],MPRmaxL)) ### ERQ_Expressive_Suppression (fixed effect)
+    WC<-c(WC,rep(tmpWC[k],MPRmaxL)) ### Word_Count
+    GEpW<-c(GEpW,rep(tmpGEpW[k],MPRmaxL)) ### Grammar_Errors_WC (fixed effect)
+    MEpW<-c(MEpW,rep(tmpMEpW[k],MPRmaxL)) ### Mechanic_Errors_WC (fixed effect)
+    WP<-c(WP,rep(tmpWP[k],MPRmaxL))   ### Writing proficiency
+    CS<-c(CS,rep(tmpCS[k],MPRmaxL))   ### Criterion score
+  }
+}  
+
+
+P<-tmpY
+P1<-P
+P1[P==0]<-"Neutral"
+P1[P==1]<-"Sad"
+P1[P==2]<-"Happy"
+P1[P==3]<-"Other"
+Pmult<-factor(as.factor(P1),levels=c("Neutral","Sad","Happy","Other"))
+class(Pmult)
+
+table(Pmult)
+
+Gr<-factor(Gr,levels=c("1","2"),labels = c("U","I"))
+Gender<-factor(Gender,levels=c("1","2"),labels = c("M","F"))
+
+### Here we scale the continuous variables
+sAge<-scale(Age)
+sPP<-scale(PPn)
+sB5A<-scale(B5Agr)
+sB5C<-scale(B5C)
+sB5E<-scale(B5E)
+sB5N<-scale(B5N)
+sB5O<-scale(B5O)
+sERQcr<-scale(ERQcr)
+sERQes<-scale(ERQes)
+sWC<-scale(WC)
+sGEpW<-scale(GEpW)
+sMEpW<-scale(MEpW)
+sWP<-scale(WP)
+sCS<-scale(CS)
+
+
+### Here we will load the gaze data
+tmpGaze<-read.csv("Gaze_data_presentation_for_R_40_subjects.csv",header=T,sep=",")
+
+Gclosed<-rep(tmpGaze$Closed[1],MPRmaxL) ### Mechanic_Errors_WC (fixed effect)
+Gleft<-rep(tmpGaze$Left[1],MPRmaxL)     ### Left Gaze percent
+Gright<-rep(tmpGaze$Right[1],MPRmaxL)   ### Right Gaze percent
+Gcenter<-rep(tmpGaze$Center[1],MPRmaxL) ### Center Gaze percent
+tmpcount<-1
+for (k in 2:N){ ### here we loop over Subjects
+  #  if (sum(k==ExcludeSubjectsBivariate)==0){
+  if (sum(k==SubjectsForAnalysis)==1){
+    tmpcount<-tmpcount+1
+    Gclosed<-c(Gclosed,rep(tmpGaze$Closed[tmpcount],MPRmaxL))
+    Gleft<-c(Gleft,rep(tmpGaze$Left[tmpcount],MPRmaxL))
+    Gright<-c(Gright,rep(tmpGaze$Right[tmpcount],MPRmaxL))
+    Gcenter<-c(Gcenter,rep(tmpGaze$Center[tmpcount],MPRmaxL))
+  }
+}
+
+
+### Here we will plot the Gaze data
+
+GazeCol<-c("grey","blue","green","red")
+boxplot(tmpGaze[,c(7,8,10,9)],ylim=c(0,100),col=GazeCol,main="Gaze distribution",ylab="Percent [%]")
+
+
+a1<-as.matrix(tmpGaze[,c(7,8,10,9)])
+a1<-a1[-24,]
+for (k in 1:4){
+  print(k)
+  a1<-a1[order(a1[,k]),]
+  par(mar=c(5, 5, 5, 0), xpd=TRUE)
+  barplot(t(a1),beside = FALSE,col=GazeCol,ylab="Percent[%]",xlab="Subjects")
+  #legend("top",,col=c("grey","blue","green","red"),
+  #       horiz=T,bty="n",title="Gaze")
+  legend("top", inset=c(0, -0.15), legend=c("Closed","Left","Center","Right"), 
+         fill=GazeCol,horiz=T,bty="n",title="Gaze")
+  var = readline()
+}
+
+
+#sGCl<-scale(Gclosed)   ### This will be collinear with the next three and so we do not use it
+sGL<-scale(Gleft)
+sGR<-scale(Gright)
+sGC<-scale(Gcenter)
+
+
+tmpL<-c(unique(Gleft))
+densL<-density(tmpL,na.rm=T)
+tmpC<-c(unique(Gcenter))
+densC<-density(tmpC,na.rm=T)
+tmpR<-c(unique(Gright))
+densL<-density(tmpL,na.rm=T)
+densC<-density(tmpC,na.rm=T)
+densR<-density(tmpR,na.rm=T)
+tmpxlim1<-c(0,100)
+tmpylim1<-c(0,max(max(densL$y),max(densC$y),max(densR$y)))
+
+par(mfrow=c(2,2),mar=c(2,2,3,2),oma=c(0.5,0.5,0.5,0.5))
+hist(unique(Gleft),xlab="",xlim=tmpxlim1, ylab="",main="Left Gaze",col = "blue")
+hist(unique(Gcenter),xlab="",xlim=tmpxlim1,ylab="",main="Center Gaze",col = "green")
+hist(unique(Gright),xlab="",xlim=tmpxlim1,ylab="",main="Right Gaze",col = "red")
+### plot at location (2,2)
+plot(0,0,type="n",xlab="",ylab="",main="",xlim=tmpxlim1,ylim=tmpylim1)
+lines(densL,col="blue",lwd=2)
+lines(densC,col="green",lwd=2)
+lines(densR,col="red",lwd=2)
+legend("topright",c("Left","Center","Right"),lty=1,lwd=2,col=c("blue","green","red"),
+       horiz=F,bty="n",title="Gaze")
+
+################################################################################
+### NOTE THAT ADDING THE GAZE DATA WE HAVE NAs FOR ONE SUBJECT AND THUS 
+### WE NOW TURN FROM 41 TO 40 SUBJECTS AS EFFECTIVE SAMPLE SIZE FOR THE ANALYSIS
+################################################################################
+
+
+### Here we will look in the correlation across the different explanatory
+### variables to remove anyones that are highly correlated
+tmpcor<-cor(cbind(sAge,sPP,sB5A,sB5C,sB5E,sB5N,sB5O,sERQcr,sERQes,sWC,sGEpW,
+                  sMEpW,sWP,sCS,sGL,sGC,sGR),use="complete.obs")
+#cor(cbind(sB5A,sERQcr,sERQes),use="complete.obs")
+sort(round(unique(c(tmpcor)),3))
+cor(sWC,sCS)
+par(mfrow=c(1,1))
+plot(sWC,sCS, main=paste("Correlation =",round(cor(sWC,sCS),3)))
+
+### Since these two variables are highly correlated we will keep one of the two
+### We will keep in the model the sCS
+
+AllData<-as.data.frame(cbind(as.factor(Pmult),Gr,Gender,sAge,sPP,sB5A,sB5C,sB5E,sB5N,
+                             sB5O,sERQcr,sERQes,sGEpW,sMEpW,sWP,sCS,sGL,sGC,sGR))
+names(AllData)[4:19]<-c("sAge","sPP","sB5A","sB5C","sB5E","sB5N","sB5O","sERQcr",
+                        "sERQes","sGEpW","sMEpW","sWP","sCS","sGL","sGC","sGR")  
+
+MBall<-mblogit(Pmult~1+Gr+Gender+sAge+sPP+sB5A+sB5C+sB5E+sB5N+sB5O+sERQes+sCS+sGL+sGC+sGR, 
+             random = ~ 1 | S, data = AllData, estimator = "REML")
+summary(MBall)
+mtable(MBall)
+tab_model(MBall)
+AIC(MBall)
+
+
+### After an exhaustive search the decided model was:
+MB<-mblogit(Pmult~1+Gr+Gender+sERQcr+sGR,
+                 random = ~ 1 | S, data = AllData)
+summary(MB)
+mtable(MB)
+tab_model(MB)
+AIC(MB)
+
+plot_model(MB,"est",sort=FALSE, show.values = TRUE, value.offset = .3,xlab="")+font_size(labels.x=15,labels.y=15,title = 0,axis_title.x =0)
+#plot_model(MB,"est",sort=TRUE, show.values = TRUE, value.offset = .3,xlab="")+font_size(labels.x=15,labels.y=15,title = 0,axis_title.x =0)
+
+### The following do not run...
+#plot_model(MB, type = "pred")$Gr
+#plot_model(MB, type = "pred")$Gender
+#plot_model(MB, type = "pred")$sERQcr
+#plot_model(MB, type = "pred")$sGR
+
