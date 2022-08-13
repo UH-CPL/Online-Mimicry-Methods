@@ -123,7 +123,7 @@ clr = c("orange","red","brown","green","grey", "deepskyblue2","yellow")
 #P Boxplot
 pp = ggplot(dp, aes(y = Freq, x = em)) + geom_boxplot(fill = clr) + 
   xlab("") + ylab("Observations [%]") +
-  ggtitle(bquote("Participant  |  "~italic("n = ")~40)) +
+  ggtitle(bquote("Participants  |  "~italic("n = ")~40)) +
   theme(axis.ticks.x = element_blank(),
         axis.ticks.y = element_blank(),
         plot.title = element_text(hjust = 0.5))
@@ -158,7 +158,7 @@ pr = ggplot(dr, aes(y = Freq, x = em)) + geom_boxplot(fill = clr) +
 
 
 px = ggarrange(pp, pl, pc, pr, nrow = 2, ncol = 2)
-pdf("Plots/emotion_boxplot_PR_40_v2.pdf", width = 12, height = 9)
+pdf("Plots/emotion_boxplot_PR_40_v3.pdf", width = 12, height = 9)
 plot(px)
 dev.off()
 

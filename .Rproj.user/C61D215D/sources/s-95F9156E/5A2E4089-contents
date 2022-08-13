@@ -39,16 +39,14 @@ gazcol = c("red","green","blue","grey")
 ######################## PR ##########################
 
 
-a1<-as.matrix(d[,c(9, 10, 8, 7, 13)])
+a1<-as.matrix(d[,c(9, 10, 8, 7, 1)])
 
 a1<-a1[order(a1[,1]),]
 lbl = a1[,5]
-lbl[which(lbl == "I")] = ""
-lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
-par(mar=c(3, 5, 3, 3), xpd = T)
+par(mar=c(4, 4, 4, 3), xpd = T)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl, las = 1)
+        names.arg = lbl, las = 2)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - PR")
 r = recordPlot()
@@ -61,9 +59,9 @@ lbl = a1[,5]
 lbl[which(lbl == "I")] = ""
 lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
-par(mar=c(3, 4, 3, 3), xpd=TRUE)
+par(mar=c(4, 4, 4, 3), xpd = T)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl)
+        names.arg = lbl, las = 2)
 # legend("top", inset=c(0, -0.15), legend=c("Closed","Left","Center","Right"), 
 #        fill=gazcol,horiz=T,bty="n",title="")
 c = recordPlot()
@@ -120,16 +118,14 @@ d = filter(d, Participant_ID %in% sub)
 
 gazcol = c("red","green","blue","grey")
 
-a1<-as.matrix(d[,c(9, 10, 8, 7, 13)])
+a1<-as.matrix(d[,c(9, 10, 8, 7, 1)])
 
 a1<-a1[order(a1[,1]),]
 lbl = a1[,5]
-lbl[which(lbl == "I")] = ""
-lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
-par(mar=c(3, 5, 3, 3), xpd=TRUE)
+par(mar=c(4, 4, 4, 3), xpd=TRUE)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl, las = 1)
+        names.arg = lbl, las = 2)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - DT")
 r = recordPlot()
@@ -201,13 +197,10 @@ gazcol = c("red","green","blue","grey")
 a1<-as.matrix(d[,c(9, 10, 8, 7, 13)])
 
 a1<-a1[order(a1[,1]),]
-lbl = a1[,5]
-lbl[which(lbl == "I")] = ""
-lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
-par(mar=c(3, 5, 3, 3), xpd=TRUE)
+par(mar=c(4, 4, 4, 3), xpd = T)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl, las = 1)
+        names.arg = lbl)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - ST")
 r = recordPlot()
@@ -277,27 +270,23 @@ d = filter(d, Participant_ID %in% sub)
 
 gazcol = c("red","green","blue","grey")
 
-d$Group2[which(d$Group2 == "I")] = 1
-d$Group2[which(d$Group2 == "NI")] = 2
 
 d$Closed[is.na(d$Closed)] = 0
 d$Left[is.na(d$Left)] = 0
 d$Right[is.na(d$Right)] = 0
 d$Center[is.na(d$Center)] = 0
 
-d = d[,c(9,10,8,7,13)]
-d$Group2 = as.numeric(d$Group2)
+d = d[,c(9,10,8,7, 1)]
+d = d[order(d$Right),]
 
 
-a1<-as.matrix(d)
+a1<-as.matrix(d[,1:4])
 a1<-a1[order(a1[,1]),]
-lbl = a1[,5]
-lbl[which(lbl == 1)] = ""
-lbl[which(lbl == 2)] = "^"
+lbl = d$Participant_ID
 a1 = a1[,1:4]
-par(mar=c(3, 5, 3, 3), xpd=TRUE)
+par(mar=c(4, 4, 4, 3), xpd=TRUE)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl, las = 1)
+        names.arg = lbl, las = 2)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - RB")
 r = recordPlot()

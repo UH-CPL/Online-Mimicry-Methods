@@ -48,7 +48,7 @@ lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
 par(mar=c(3, 5, 3, 3), xpd = T)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl)
+        names.arg = lbl, las = 1)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - PR")
 r = recordPlot()
@@ -129,7 +129,7 @@ lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
 par(mar=c(3, 5, 3, 3), xpd=TRUE)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl)
+        names.arg = lbl, las = 1)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - DT")
 r = recordPlot()
@@ -207,7 +207,7 @@ lbl[which(lbl == "NI")] = "^"
 a1 = a1[,1:4]
 par(mar=c(3, 5, 3, 3), xpd=TRUE)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl)
+        names.arg = lbl, las = 1)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - ST")
 r = recordPlot()
@@ -277,16 +277,27 @@ d = filter(d, Participant_ID %in% sub)
 
 gazcol = c("red","green","blue","grey")
 
-a1<-as.matrix(d[,c(9, 10, 8, 7, 13)])
-a1[is.na(a1)] = 0
+d$Group2[which(d$Group2 == "I")] = 1
+d$Group2[which(d$Group2 == "NI")] = 2
+
+d$Closed[is.na(d$Closed)] = 0
+d$Left[is.na(d$Left)] = 0
+d$Right[is.na(d$Right)] = 0
+d$Center[is.na(d$Center)] = 0
+
+d = d[,c(9,10,8,7,13)]
+d$Group2 = as.numeric(d$Group2)
+
+
+a1<-as.matrix(d)
 a1<-a1[order(a1[,1]),]
 lbl = a1[,5]
-lbl[which(lbl == "I")] = ""
-lbl[which(lbl == "NI")] = "^"
+lbl[which(lbl == 1)] = ""
+lbl[which(lbl == 2)] = "^"
 a1 = a1[,1:4]
 par(mar=c(3, 5, 3, 3), xpd=TRUE)
 barplot(t(a1),beside = FALSE,col=gazcol,ylab="Observations [%]",xlab="",
-        names.arg = lbl)
+        names.arg = lbl, las = 1)
 legend("top", inset=c(0, -0.14), legend=c("Right","Center","Left","Closed"), 
        fill=gazcol,horiz=T,bty="n",title="Gaze - RB")
 r = recordPlot()

@@ -1,26 +1,27 @@
 {
-    "id": "CD61DF3E",
-    "path": "C:/Users/cpladmin/Desktop/Online-Mimicry-Methods/v21_meanEmo_boxplot_v2.R",
-    "project_path": "v21_meanEmo_boxplot_v2.R",
+    "id": "60080A09",
+    "path": "C:/Users/cpladmin/Desktop/Online-Mimicry-Methods/a4_RandomizedBlockingForGazeFrames.R",
+    "project_path": "a4_RandomizedBlockingForGazeFrames.R",
     "type": "r_source",
-    "hash": "1764339987",
+    "hash": "3096908378",
     "contents": "",
     "dirty": false,
-    "created": 1660270329908.0,
+    "created": 1660353668465.0,
     "source_on_save": false,
     "relative_order": 5,
     "properties": {
+        "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "165,0",
-        "scrollLine": "115"
+        "cursorPosition": "30,38",
+        "scrollLine": "0"
     },
     "folds": "",
     "lastKnownWriteTime": 1660356895,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1660356895203,
+    "last_content_update": 1660356895217,
     "read_only": false,
     "read_only_alternatives": []
 }
